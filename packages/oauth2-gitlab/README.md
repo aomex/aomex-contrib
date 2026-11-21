@@ -116,7 +116,7 @@ onProfile: async ({ token, userinfo }) => {
 },
 ```
 
-也可直接：`import { fetchGitLabUser, gitlab } from '@aomex-contrib/oauth2-gitlab'`。
+也可直接：`import { fetchGitLabUser } from '@aomex-contrib/oauth2-gitlab'`。
 
 ---
 

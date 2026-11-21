@@ -9,7 +9,7 @@ import {
  * GitLab.com OAuth2 客户端预设
  * @see https://docs.gitlab.com/ee/api/oauth2.html
  */
-export const gitlab = {
+const gitlab = {
   authorizationEndpoint: 'https://gitlab.com/oauth/authorize',
   tokenEndpoint: 'https://gitlab.com/oauth/token',
   revocationEndpoint: 'https://gitlab.com/oauth/revoke',

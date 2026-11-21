@@ -121,12 +121,10 @@ onProfile: async ({ oidc }) =>
 
 ## 7. 默认预设
 
-```ts
-import { microsoft } from '@aomex-contrib/oauth2-microsoft';
-// microsoft.oidc.issuer、microsoft.scopes
-```
+- issuer：`https://login.microsoftonline.com/common/v2.0`
+- scopes：`openid`、`profile`、`email`、`offline_access`
 
-默认 scopes：`openid`、`profile`、`email`、`offline_access`。
+构造时传 `scopes` / `oidc` 等可覆盖。
 
 ---
 

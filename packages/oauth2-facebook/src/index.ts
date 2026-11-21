@@ -9,7 +9,7 @@ import {
  * Facebook Login OAuth2 客户端预设
  * @see https://developers.facebook.com/docs/facebook-login/guides/advanced/manual-flow
  */
-export const facebook = {
+const facebook = {
   authorizationEndpoint: 'https://www.facebook.com/v21.0/dialog/oauth',
   tokenEndpoint: 'https://graph.facebook.com/v21.0/oauth/access_token',
   scopes: ['email', 'public_profile'],

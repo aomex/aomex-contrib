@@ -89,7 +89,7 @@ onProfile: async ({ token, userinfo }) => {
 },
 ```
 
-也可直接：`import { fetchLinkedInUser, linkedin } from '@aomex-contrib/oauth2-linkedin'`。
+也可直接：`import { fetchLinkedInUser } from '@aomex-contrib/oauth2-linkedin'`。
 
 ---
 

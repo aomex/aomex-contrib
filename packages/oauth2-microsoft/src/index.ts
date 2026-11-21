@@ -24,7 +24,7 @@ export type MicrosoftIdTokenClaims = OAuth2Client.IdTokenClaims & {
   readonly ver?: string;
 };
 
-export const microsoft = {
+const microsoft = {
   oidc: { issuer: 'https://login.microsoftonline.com/common/v2.0' },
   scopes: ['openid', 'profile', 'email', 'offline_access'],
 } as const;

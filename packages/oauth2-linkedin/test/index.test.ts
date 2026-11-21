@@ -1,11 +1,6 @@
 import { CacheMemoryAdapter } from '@aomex/cache/memory';
 import { expect, test } from 'vitest';
-import { LinkedInOAuth2Client, linkedin } from '../src';
-
-test('端点为绝对 URL', () => {
-  expect(() => new URL(linkedin.authorizationEndpoint)).not.toThrow();
-  expect(() => new URL(linkedin.tokenEndpoint)).not.toThrow();
-});
+import { LinkedInOAuth2Client } from '../src';
 
 test('可构造', () => {
   expect(

@@ -114,13 +114,10 @@ const google = new GoogleOAuth2Client({
 
 ## 6. 默认预设（可覆盖）
 
-```ts
-import { google } from '@aomex-contrib/oauth2-google';
-// google.oidc.issuer === 'https://accounts.google.com'
-// google.scopes === ['openid', 'email', 'profile']
-```
+- issuer：`https://accounts.google.com`
+- scopes：`openid`、`email`、`profile`
 
-构造时传 `scopes` / `oidc` / `authorizationParams` 可覆盖。也可不用类，只拿 `google` 预设自己 `new OAuth2Client(...)`。
+构造时传 `scopes` / `oidc` / `authorizationParams` 可覆盖。
 
 ---
 

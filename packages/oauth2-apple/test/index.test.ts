@@ -1,13 +1,8 @@
 import { CacheMemoryAdapter } from '@aomex/cache/memory';
 import { exportPKCS8, generateKeyPair } from 'jose';
 import { expect, test } from 'vitest';
-import { AppleOAuth2Client, apple } from '../src';
+import { AppleOAuth2Client } from '../src';
 import { i18n } from '../src/i18n';
-
-test('预设含 form_post 与 issuer', () => {
-  expect(apple.oidc.issuer).toBe('https://appleid.apple.com');
-  expect(apple.authorizationParams.response_mode).toBe('form_post');
-});
 
 test('构造：缺 teamId / keyId / privateKey 抛错', async () => {
   const { privateKey } = await generateKeyPair('ES256', {

@@ -9,7 +9,7 @@ import {
  * LinkedIn OAuth2 客户端预设
  * @see https://learn.microsoft.com/linkedin/shared/authentication/authorization-code-flow
  */
-export const linkedin = {
+const linkedin = {
   authorizationEndpoint: 'https://www.linkedin.com/oauth/v2/authorization',
   tokenEndpoint: 'https://www.linkedin.com/oauth/v2/accessToken',
   revocationEndpoint: 'https://www.linkedin.com/oauth/v2/revoke',

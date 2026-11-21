@@ -92,7 +92,7 @@ onProfile: async ({ token, userinfo }) => {
 },
 ```
 
-也可直接：`import { fetchTwitterUser, twitter } from '@aomex-contrib/oauth2-twitter'`。
+也可直接：`import { fetchTwitterUser } from '@aomex-contrib/oauth2-twitter'`。
 
 ---
 

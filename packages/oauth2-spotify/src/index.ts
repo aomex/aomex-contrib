@@ -9,7 +9,7 @@ import {
  * Spotify OAuth2 客户端预设
  * @see https://developer.spotify.com/documentation/web-api/concepts/authorization
  */
-export const spotify = {
+const spotify = {
   authorizationEndpoint: 'https://accounts.spotify.com/authorize',
   tokenEndpoint: 'https://accounts.spotify.com/api/token',
   scopes: ['user-read-email'],

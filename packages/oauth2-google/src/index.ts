@@ -27,7 +27,7 @@ export type GoogleIdTokenClaims = OAuth2Client.IdTokenClaims & {
   readonly locale?: string;
 };
 
-export const google = {
+const google = {
   oidc: { issuer: 'https://accounts.google.com' },
   scopes: ['openid', 'email', 'profile'],
 } as const;

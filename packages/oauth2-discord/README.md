@@ -89,7 +89,7 @@ onProfile: async ({ token, userinfo }) => {
 },
 ```
 
-也可直接：`import { fetchDiscordUser, discord } from '@aomex-contrib/oauth2-discord'`。
+也可直接：`import { fetchDiscordUser } from '@aomex-contrib/oauth2-discord'`。
 
 ---
 

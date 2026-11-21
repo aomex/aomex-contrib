@@ -1,10 +1,6 @@
 import { CacheMemoryAdapter } from '@aomex/cache/memory';
 import { expect, test } from 'vitest';
-import { GoogleOAuth2Client, google } from '../src';
-
-test('预设 issuer', () => {
-  expect(google.oidc.issuer).toMatch(/^https:\/\//);
-});
+import { GoogleOAuth2Client } from '../src';
 
 test('可构造', () => {
   const client = new GoogleOAuth2Client({

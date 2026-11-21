@@ -1,11 +1,6 @@
 import { CacheMemoryAdapter } from '@aomex/cache/memory';
 import { expect, test } from 'vitest';
-import { SpotifyOAuth2Client, spotify } from '../src';
-
-test('端点为绝对 URL', () => {
-  expect(() => new URL(spotify.authorizationEndpoint)).not.toThrow();
-  expect(() => new URL(spotify.tokenEndpoint)).not.toThrow();
-});
+import { SpotifyOAuth2Client } from '../src';
 
 test('可构造', () => {
   expect(

@@ -97,7 +97,7 @@ onProfile: async ({ token, userinfo }) => {
 },
 ```
 
-也可直接：`import { fetchGitHubUser, github } from '@aomex-contrib/oauth2-github'`。
+也可直接：`import { fetchGitHubUser } from '@aomex-contrib/oauth2-github'`。
 
 ---
 

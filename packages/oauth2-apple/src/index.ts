@@ -56,7 +56,7 @@ export type AppleProfile = {
 
 const APPLE_AUDIENCE = 'https://appleid.apple.com';
 
-export const apple = {
+const apple = {
   oidc: { issuer: 'https://appleid.apple.com' },
   scopes: ['openid', 'email', 'name'],
   authorizationParams: { response_mode: 'form_post' },

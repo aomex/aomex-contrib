@@ -92,7 +92,7 @@ onProfile: async ({ token, userinfo }) => {
 },
 ```
 
-也可直接：`import { fetchSpotifyUser, spotify } from '@aomex-contrib/oauth2-spotify'`。
+也可直接：`import { fetchSpotifyUser } from '@aomex-contrib/oauth2-spotify'`。
 
 ---
 

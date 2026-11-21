@@ -9,7 +9,7 @@ import {
  * Discord OAuth2 客户端预设
  * @see https://discord.com/developers/docs/topics/oauth2
  */
-export const discord = {
+const discord = {
   authorizationEndpoint: 'https://discord.com/api/oauth2/authorize',
   tokenEndpoint: 'https://discord.com/api/oauth2/token',
   revocationEndpoint: 'https://discord.com/api/oauth2/token/revoke',

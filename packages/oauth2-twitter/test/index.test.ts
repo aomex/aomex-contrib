@@ -1,11 +1,6 @@
 import { CacheMemoryAdapter } from '@aomex/cache/memory';
 import { expect, test } from 'vitest';
-import { TwitterOAuth2Client, twitter } from '../src';
-
-test('端点为绝对 URL', () => {
-  expect(() => new URL(twitter.authorizationEndpoint)).not.toThrow();
-  expect(() => new URL(twitter.tokenEndpoint)).not.toThrow();
-});
+import { TwitterOAuth2Client } from '../src';
 
 test('可构造', () => {
   expect(

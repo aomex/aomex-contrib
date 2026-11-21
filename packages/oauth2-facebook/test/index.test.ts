@@ -1,11 +1,6 @@
 import { CacheMemoryAdapter } from '@aomex/cache/memory';
 import { expect, test } from 'vitest';
-import { FacebookOAuth2Client, facebook } from '../src';
-
-test('端点为绝对 URL', () => {
-  expect(() => new URL(facebook.authorizationEndpoint)).not.toThrow();
-  expect(() => new URL(facebook.tokenEndpoint)).not.toThrow();
-});
+import { FacebookOAuth2Client } from '../src';
 
 test('可构造', () => {
   expect(

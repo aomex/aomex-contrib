@@ -89,7 +89,7 @@ onProfile: async ({ token, userinfo }) => {
 },
 ```
 
-也可直接：`import { fetchFacebookUser, facebook } from '@aomex-contrib/oauth2-facebook'`。
+也可直接：`import { fetchFacebookUser } from '@aomex-contrib/oauth2-facebook'`。
 
 ---
 

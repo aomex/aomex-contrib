@@ -9,7 +9,7 @@ import {
  * Twitter（X）OAuth2 客户端预设
  * @see https://docs.x.com/resources/fundamentals/authentication/oauth-2-0/authorization-code
  */
-export const twitter = {
+const twitter = {
   authorizationEndpoint: 'https://x.com/i/oauth2/authorize',
   tokenEndpoint: 'https://api.x.com/2/oauth2/token',
   scopes: ['tweet.read', 'users.read', 'offline.access'],

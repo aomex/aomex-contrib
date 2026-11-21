@@ -9,7 +9,7 @@ import {
  * GitHub OAuth2 客户端预设
  * @see https://docs.github.com/apps/oauth-apps/building-oauth-apps/authorizing-oauth-apps
  */
-export const github = {
+const github = {
   authorizationEndpoint: 'https://github.com/login/oauth/authorize',
   tokenEndpoint: 'https://github.com/login/oauth/access_token',
   scopes: ['read:user', 'user:email'],
