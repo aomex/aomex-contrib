@@ -1,6 +1,6 @@
 {
   "name": "@aomex-contrib/oauth2-wecom",
-  "version": "0.0.1",
+  "version": "0.1.0",
   "description": "企业微信 OAuth2 变体：自建应用网页授权（corp token + code → userid）",
   "repository": "git@github.com:aomex/aomex-contrib.git",
   "homepage": "https://aomex.js.org",

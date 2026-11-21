@@ -1,6 +1,6 @@
 {
   "name": "@aomex-contrib/oauth2-apple",
-  "version": "0.0.1",
+  "version": "0.1.0",
   "description": "Sign in with Apple（OIDC：form_post 回调 + JWT client_secret）",
   "repository": "git@github.com:aomex/aomex-contrib.git",
   "homepage": "https://aomex.js.org",

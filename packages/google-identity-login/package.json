@@ -1,6 +1,6 @@
 {
   "name": "@aomex-contrib/google-identity-login",
-  "version": "0.0.1",
+  "version": "0.1.0",
   "description": "Google Identity Services 登录后端（验 credential / userinfo / auth-code，非 redirect OAuth）",
   "repository": "git@github.com:aomex/aomex-contrib.git",
   "homepage": "https://aomex.js.org",
