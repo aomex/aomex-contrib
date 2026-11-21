@@ -2,4 +2,5 @@ dist/
 pnpm-lock.yaml
 CHANGELOG.md
 coverage/
-.changeset/*.md
+.changeset/
+!.changeset/config.json
