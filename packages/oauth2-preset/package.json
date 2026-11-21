@@ -1,6 +1,6 @@
 {
   "name": "@aomex-contrib/oauth2-preset",
-  "version": "0.0.1",
+  "version": "0.1.0",
   "description": "OAuth2 / OIDC 厂商预设合并工具（供 @aomex-contrib/oauth2-* 使用）",
   "repository": "git@github.com:aomex/aomex-contrib.git",
   "homepage": "https://aomex.js.org",

@@ -1,6 +1,6 @@
 {
   "name": "@aomex-contrib/oauth2-linkedin",
-  "version": "0.0.1",
+  "version": "0.1.0",
   "description": "LinkedIn OAuth2 客户端预设",
   "repository": "git@github.com:aomex/aomex-contrib.git",
   "homepage": "https://aomex.js.org",
