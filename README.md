@@ -10,10 +10,14 @@ Aomex **周边** monorepo：厂商预设、非标准协议适配、其它非核�
 
 ```bash
 pnpm install
+pnpm test
+pnpm build
 pnpm changeset          # 记录变更
 pnpm version            # bump 版本并写 CHANGELOG
 pnpm release            # 发布到 npm
 ```
+
+工具链与主仓对齐：Node >= 24、pnpm、Prettier、commitlint、husky、TypeScript、vitest、tsdown、Changesets。
 
 ## 包目录
 

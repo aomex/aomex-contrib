@@ -19,6 +19,13 @@
 - 各包 `README.md` 仅含包名标题与指向说明（或主文档站链接），**不要写长用法教程**（与主仓约定一致时可只写标题 + 文档链接）
 - **不要**由 Agent 主动生成或改写 `CHANGELOG.md`；由 Changesets 在 `pnpm version` 时写入
 
+## 环境与工具（对齐主仓）
+
+- 运行时：`node >= 24.0.0`，包管理：`pnpm`
+- 提交信息：conventional commits（commitlint）
+- 格式化：Prettier；提交前 husky 会跑 `prettier --check` 与 `tsc`
+- 测试：vitest；构建：各包 `prepublishOnly`（tsdown）
+
 ## 发包
 
 - 使用 Changesets：改代码后补 changeset，发布走 `pnpm version` / `pnpm release`
