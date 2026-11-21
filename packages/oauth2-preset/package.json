@@ -1,0 +1,39 @@
+{
+  "name": "@aomex-contrib/oauth2-preset",
+  "version": "0.0.1",
+  "description": "OAuth2 / OIDC 厂商预设合并工具（供 @aomex-contrib/oauth2-* 使用）",
+  "repository": "git@github.com:aomex/aomex-contrib.git",
+  "homepage": "https://aomex.js.org",
+  "license": "MIT",
+  "type": "module",
+  "sideEffects": false,
+  "scripts": {
+    "prepublishOnly": "tsdown"
+  },
+  "types": "src/index.ts",
+  "exports": "./src/index.ts",
+  "files": [
+    "dist",
+    "LICENSE",
+    "package.json",
+    "README.md",
+    "CHANGELOG.md"
+  ],
+  "publishConfig": {
+    "types": "dist/index.d.ts",
+    "exports": {
+      ".": {
+        "types": "./dist/index.d.ts",
+        "import": "./dist/index.js"
+      },
+      "./package.json": "./package.json"
+    },
+    "access": "public"
+  },
+  "peerDependencies": {
+    "@aomex/oauth2-client": "^4.3.0"
+  },
+  "devDependencies": {
+    "@aomex/oauth2-client": "^4.3.0"
+  }
+}

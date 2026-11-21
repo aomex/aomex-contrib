@@ -1,0 +1,60 @@
+import { CacheMemoryAdapter } from '@aomex/cache/memory';
+import { expectType, type TypeEqual } from 'ts-expect';
+import { WecomOAuth2Client, type WecomProfile, type WecomTokenSet } from '../src';
+
+const defaultClient = new WecomOAuth2Client({
+  corpId: 'ww',
+  corpSecret: 'sec',
+  agentId: 1000002,
+  redirectUri: 'https://example.com/cb',
+  store: new CacheMemoryAdapter(),
+  scopes: ['snsapi_base'],
+});
+declare const defaultProfile: Awaited<ReturnType<typeof defaultClient.callback>>;
+expectType<TypeEqual<WecomProfile, typeof defaultProfile>>(true);
+
+new WecomOAuth2Client({
+  corpId: 'ww',
+  corpSecret: 'sec',
+  agentId: 1000002,
+  redirectUri: 'https://example.com/cb',
+  store: new CacheMemoryAdapter(),
+  scopes: ['snsapi_base'],
+  onProfile({ token, profile }) {
+    expectType<TypeEqual<WecomTokenSet, typeof token>>(true);
+    expectType<TypeEqual<WecomProfile, typeof profile>>(true);
+    expectType<TypeEqual<string | undefined, typeof profile.userid>>(true);
+    return { id: profile.userid ?? profile.openid };
+  },
+});
+
+new WecomOAuth2Client({
+  corpId: 'ww',
+  corpSecret: 'sec',
+  agentId: '1000002',
+  redirectUri: 'https://example.com/cb',
+  store: new CacheMemoryAdapter(),
+  scopes: ['snsapi_privateinfo'],
+  onProfile: async ({ profile }) => profile.userid,
+});
+
+new WecomOAuth2Client({
+  corpId: 'ww',
+  corpSecret: 'sec',
+  agentId: 1,
+  redirectUri: 'https://example.com/cb',
+  store: new CacheMemoryAdapter(),
+  // @ts-expect-error 企微 scope 仅 snsapi_base / snsapi_privateinfo
+  scopes: ['snsapi_userinfo'],
+});
+
+new WecomOAuth2Client({
+  corpId: 'ww',
+  corpSecret: 'sec',
+  agentId: 1,
+  redirectUri: 'https://example.com/cb',
+  store: new CacheMemoryAdapter(),
+  scopes: ['snsapi_base'],
+  // @ts-expect-error 应用用 corpId，不是 clientId
+  clientId: 'ww',
+});

@@ -19,8 +19,24 @@ pnpm release            # 发布到 npm
 
 工具链与主仓对齐：Node >= 24、pnpm、Prettier、commitlint、husky、TypeScript、vitest、tsdown、Changesets。
 
-## 包目录
+## OAuth2 / OIDC 厂商包
 
-新建包放在 `packages/<name>`，例如 `packages/oauth-github` → `@aomex-contrib/oauth-github`。
+一厂商一包；标准授权码只填端点，Apple 等变种在包内改回调 / `client_secret`。
 
-对 `@aomex/*` 核心包一律用 `peerDependencies`，不要 vendoring 核心代码。
+| 包                                         | 说明                                         |
+| ------------------------------------------ | -------------------------------------------- |
+| `@aomex-contrib/oauth2-preset`             | 厂商预设合并工具（内部共用，一般不必直连）   |
+| `@aomex-contrib/oauth2-google`             | Google OIDC（整页 redirect）                 |
+| `@aomex-contrib/google-identity-login`     | Google GIS 登录后端（credential / userinfo） |
+| `@aomex-contrib/oauth2-microsoft`          | Microsoft / Entra ID OIDC                    |
+| `@aomex-contrib/oauth2-apple`              | Sign in with Apple（form_post + JWT secret） |
+| `@aomex-contrib/oauth2-github`             | GitHub OAuth2                                |
+| `@aomex-contrib/oauth2-discord`            | Discord OAuth2                               |
+| `@aomex-contrib/oauth2-gitlab`             | GitLab.com OAuth2                            |
+| `@aomex-contrib/oauth2-linkedin`           | LinkedIn OAuth2                              |
+| `@aomex-contrib/oauth2-facebook`           | Facebook Login OAuth2                        |
+| `@aomex-contrib/oauth2-twitter`            | Twitter（X）OAuth2                           |
+| `@aomex-contrib/oauth2-spotify`            | Spotify OAuth2                               |
+| `@aomex-contrib/oauth2-wechat`             | 微信开放平台 / 公众号 OAuth2                 |
+| `@aomex-contrib/wechat-mini-program-login` | 微信小程序 / 小游戏登录（非 OAuth）          |
+| `@aomex-contrib/oauth2-wecom`              | 企业微信自建应用网页授权                     |

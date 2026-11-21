@@ -1,0 +1,42 @@
+{
+  "name": "@aomex-contrib/google-identity-login",
+  "version": "0.0.1",
+  "description": "Google Identity Services 登录后端（验 credential / userinfo / auth-code，非 redirect OAuth）",
+  "repository": "git@github.com:aomex/aomex-contrib.git",
+  "homepage": "https://aomex.js.org",
+  "license": "MIT",
+  "type": "module",
+  "sideEffects": false,
+  "scripts": {
+    "prepublishOnly": "tsdown"
+  },
+  "types": "src/index.ts",
+  "exports": "./src/index.ts",
+  "files": [
+    "dist",
+    "LICENSE",
+    "package.json",
+    "README.md",
+    "CHANGELOG.md"
+  ],
+  "publishConfig": {
+    "types": "dist/index.d.ts",
+    "exports": {
+      ".": {
+        "types": "./dist/index.d.ts",
+        "import": "./dist/index.js"
+      },
+      "./package.json": "./package.json"
+    },
+    "access": "public"
+  },
+  "peerDependencies": {
+    "@aomex/common": "^4.3.0"
+  },
+  "dependencies": {
+    "jose": "^6.2.0"
+  },
+  "devDependencies": {
+    "@aomex/common": "^4.3.0"
+  }
+}

@@ -1,0 +1,45 @@
+{
+  "name": "@aomex-contrib/oauth2-github",
+  "version": "0.0.1",
+  "description": "GitHub OAuth2 客户端预设",
+  "repository": "git@github.com:aomex/aomex-contrib.git",
+  "homepage": "https://aomex.js.org",
+  "license": "MIT",
+  "type": "module",
+  "sideEffects": false,
+  "scripts": {
+    "prepublishOnly": "tsdown"
+  },
+  "types": "src/index.ts",
+  "exports": "./src/index.ts",
+  "files": [
+    "dist",
+    "LICENSE",
+    "package.json",
+    "README.md",
+    "CHANGELOG.md"
+  ],
+  "publishConfig": {
+    "types": "dist/index.d.ts",
+    "exports": {
+      ".": {
+        "types": "./dist/index.d.ts",
+        "import": "./dist/index.js"
+      },
+      "./package.json": "./package.json"
+    },
+    "access": "public"
+  },
+  "peerDependencies": {
+    "@aomex/oauth2-client": "^4.3.0"
+  },
+  "dependencies": {
+    "@aomex-contrib/oauth2-preset": "workspace:^"
+  },
+  "devDependencies": {
+    "@aomex/cache": "^4.3.0",
+    "@aomex/common": "^4.3.0",
+    "@aomex/oauth2-client": "^4.3.0",
+    "@aomex/web": "^4.3.0"
+  }
+}

@@ -1,0 +1,26 @@
+import { CacheMemoryAdapter } from '@aomex/cache/memory';
+import { expectType, type TypeEqual } from 'ts-expect';
+import { FacebookOAuth2Client, type FacebookUser, type OAuth2Profile } from '../src';
+
+const defaultClient = new FacebookOAuth2Client({
+  clientId: 'cid',
+  clientSecret: 's',
+  redirectUri: 'http://localhost/cb',
+  store: new CacheMemoryAdapter(),
+});
+declare const defaultProfile: Awaited<ReturnType<typeof defaultClient.callback>>;
+expectType<TypeEqual<OAuth2Profile<FacebookUser>, typeof defaultProfile>>(true);
+
+new FacebookOAuth2Client({
+  clientId: 'cid',
+  clientSecret: 's',
+  redirectUri: 'http://localhost/cb',
+  store: new CacheMemoryAdapter(),
+  onProfile(args) {
+    // @ts-expect-error 纯 OAuth2 无 oidc
+    args.oidc;
+    const { token, userinfo } = args;
+    expectType<TypeEqual<FacebookUser, typeof userinfo>>(true);
+    return { accessToken: token.access_token };
+  },
+});
