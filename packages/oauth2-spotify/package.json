@@ -1,6 +1,6 @@
 {
   "name": "@aomex-contrib/oauth2-spotify",
-  "version": "0.1.0",
+  "version": "0.1.1",
   "description": "Spotify OAuth2 客户端预设",
   "repository": "git@github.com:aomex/aomex-contrib.git",
   "homepage": "https://aomex.js.org",

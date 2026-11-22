@@ -1,5 +1,11 @@
 # @aomex-contrib/oauth2-wechat
 
+## 0.2.0
+
+### Minor Changes
+
+- [`3a0c0b2`](https://github.com/aomex/aomex-contrib/commit/3a0c0b29390d1c881a68d7d492d61f341354e965) Thanks [@geekact](https://github.com/geekact)! - `WechatMpOAuth2Client` 支持公众号全局 `access_token`：`getAccessToken` / `deleteAccessToken` / `withAccessToken` / `assertOk`（`store` 缓存 + `singleFlight`）；peer 升至 `@aomex/*` `^4.4.0`
+
 ## 0.1.0
 
 ### Minor Changes

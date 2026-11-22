@@ -1,6 +1,6 @@
 {
   "name": "@aomex-contrib/wechat-mini-program-login",
-  "version": "0.1.0",
+  "version": "0.2.0",
   "description": "微信小程序 / 小游戏登录与手机号（jscode2session + access_token + getPhoneNumber，非 OAuth2）",
   "repository": "git@github.com:aomex/aomex-contrib.git",
   "homepage": "https://aomex.js.org",
