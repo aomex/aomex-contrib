@@ -1,0 +1,43 @@
+name: Publish Next
+
+on:
+  push:
+    branches:
+      - develop
+
+concurrency:
+  group: publish-next
+  cancel-in-progress: false
+
+env:
+  CI: true
+
+jobs:
+  lint:
+    uses: ./.github/workflows/lint.yml
+  test:
+    uses: ./.github/workflows/test.yml
+  publish:
+    needs: [lint, test]
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v5
+        with:
+          fetch-depth: 0
+      - uses: pnpm/setup@v3
+        with:
+          runtime: node@24
+          cache: true
+          install: false
+      - run: pnpm install
+      # Changesets snapshot：本地 bump，不 push；publish --no-git-tag 不打 tag、不建 GitHub Release
+      - run: pnpm exec changeset version --snapshot next
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          HUSKY: '0'
+      - run: |
+          npm config set //registry.npmjs.org/:_authToken ${{ secrets.NPM_TOKEN }}
+          pnpm exec changeset publish --tag next --no-git-tag
+        env:
+          NPM_TOKEN: ${{ secrets.NPM_TOKEN }}
+          HUSKY: '0'

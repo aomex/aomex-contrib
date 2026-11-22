@@ -5,6 +5,7 @@ Aomex **周边** monorepo：厂商预设、非标准协议适配、其它非核�
 - 核心运行时仍在 [aomex/aomex](https://github.com/aomex/aomex)
 - npm 包使用 scope：`@aomex-contrib/*`
 - 版本与 changelog：Changesets（独立发包）
+- `develop` 推送后对有 changeset 的包发 npm `next` 预览版（Changesets snapshot，不打 git tag、不建 GitHub Release）；正式版走 `main`
 
 ## 开发
 
@@ -15,6 +16,7 @@ pnpm build
 pnpm changeset          # 记录变更
 pnpm version            # bump 版本并写 CHANGELOG
 pnpm release            # 发布到 npm
+# 预览：pnpm add @aomex-contrib/<pkg>@next
 ```
 
 工具链与主仓对齐：Node >= 24、pnpm、Prettier、commitlint、husky、TypeScript、vitest、tsdown、Changesets。
