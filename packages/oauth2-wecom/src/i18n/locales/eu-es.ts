@@ -6,7 +6,7 @@ export default I18n.satisfies(zh).define({
   corp_id_empty: 'corpId ezin da hutsik egon',
   corp_secret_empty: 'corpSecret ezin da hutsik egon',
   agent_id_empty: 'agentId ezin da hutsik egon',
-  corp_token_failed:
+  access_token_failed:
     'WeCom access_token eskuratzeak huts egin du: {{errcode}} {{errmsg}}',
   userinfo_failed:
     'WeCom erabiltzaile-identitatea eskuratzeak huts egin du: {{errcode}} {{errmsg}}',

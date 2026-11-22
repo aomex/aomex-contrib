@@ -14,7 +14,7 @@ export type WechatTokenSet = Omit<
 > & {
   /**
    * 网页授权接口调用凭证。
-   * 与公众号/开放平台「基础支持」的全局 `access_token` 不同，仅能用于授权用户信息相关接口
+   * 与公众号全局 `cgi-bin/token`（见 `WechatMpOAuth2Client#getAccessToken`）不同，仅能用于授权用户信息相关接口
    *（如 `/sns/userinfo`、`/sns/auth`），不能调其它业务 API。
    */
   access_token: string;

@@ -1,16 +1,11 @@
 import { CacheMemoryAdapter } from '@aomex/cache/memory';
 import { afterEach, expect, test, vi } from 'vitest';
-import {
-  WECOM_AUTHORIZE,
-  WECOM_GET_TOKEN_URL,
-  WECOM_GET_USERINFO_URL,
-  WecomOAuth2Client,
-  corpTokenCacheKey,
-  exchangeWecomCode,
-  getWecomCorpToken,
-  invalidateWecomCorpToken,
-} from '../src';
+import { WecomOAuth2Client } from '../src';
 import { i18n } from '../src/i18n';
+
+const WECOM_AUTHORIZE = 'https://open.weixin.qq.com/connect/oauth2/authorize';
+const WECOM_GET_TOKEN_URL = 'https://qyapi.weixin.qq.com/cgi-bin/gettoken';
+const WECOM_GET_USERINFO_URL = 'https://qyapi.weixin.qq.com/cgi-bin/auth/getuserinfo';
 
 afterEach(() => {
   vi.unstubAllGlobals();
@@ -35,6 +30,24 @@ function stubJsonFetch(handler: (url: URL) => unknown) {
       };
     }),
   );
+}
+
+function createClient(
+  opts: {
+    corpId?: string;
+    corpSecret?: string;
+    agentId?: string | number;
+    store?: CacheMemoryAdapter;
+  } = {},
+) {
+  return new WecomOAuth2Client({
+    scopes: ['snsapi_base'],
+    corpId: opts.corpId ?? 'ww',
+    corpSecret: opts.corpSecret ?? 'sec',
+    agentId: opts.agentId ?? 1,
+    redirectUri: 'https://example.com/cb',
+    store: opts.store ?? new CacheMemoryAdapter(),
+  });
 }
 
 test('构造：空 corpId / corpSecret / agentId 抛错', () => {
@@ -87,7 +100,7 @@ test('授权 URL：appid=corpId、默认 snsapi_base、agentid、#wechat_redirec
     redirectUri: 'https://example.com/cb',
     store: new CacheMemoryAdapter(),
     scopes: ['snsapi_base'],
-    onProfile: async ({ token }) => token.userid,
+    onProfile: async ({ profile }) => profile.userid,
   });
 
   const raw = await client.getAuthorizationUrl(mockCtx());
@@ -125,7 +138,7 @@ test('authorizationParams 附加在 agentid 后；忽略覆盖必填字段', asy
       appid: 'ignored',
       agentid: 'ignored',
     },
-    onProfile: async ({ token }) => token.userid,
+    onProfile: async ({ profile }) => profile.userid,
   });
 
   const raw = await client.getAuthorizationUrl(mockCtx());
@@ -194,13 +207,17 @@ test('callback：gettoken + getuserinfo；默认 onProfile 返回 WecomProfile',
   });
   expect(paths).toEqual([WECOM_GET_TOKEN_URL, WECOM_GET_USERINFO_URL]);
 
-  // corp token 已缓存，再次 getCorpAccessToken 不再请求
+  // corp token 已缓存，再次 getAccessToken 不再请求
   paths.length = 0;
-  await expect(client.getCorpAccessToken()).resolves.toBe('corp_at');
+  await expect(client.getAccessToken()).resolves.toBe('corp_at');
   expect(paths).toEqual([]);
 });
 
 test('非企业成员：返回 openid', async () => {
+  const client = createClient();
+  const raw = await client.getAuthorizationUrl(mockCtx());
+  const state = new URL(raw.replace(/#wechat_redirect$/, '')).searchParams.get('state')!;
+
   stubJsonFetch((url) => {
     if (url.pathname.endsWith('/gettoken')) {
       return { errcode: 0, access_token: 'at', expires_in: 7200 };
@@ -212,15 +229,8 @@ test('非企业成员：返回 openid', async () => {
     };
   });
 
-  const token = await exchangeWecomCode({
-    corpId: 'ww',
-    corpSecret: 'sec',
-    code: 'c',
-    store: new CacheMemoryAdapter(),
-  });
-  expect(token).toEqual({
-    access_token: '',
-    token_type: 'bearer',
+  const profile = await client.callback(mockCtx({ code: 'c', state }));
+  expect(profile).toEqual({
     userid: undefined,
     user_ticket: undefined,
     openid: 'EXT_OPENID',
@@ -229,28 +239,15 @@ test('非企业成员：返回 openid', async () => {
 });
 
 test('gettoken / getuserinfo 失败 errcode', async () => {
+  const client = createClient({ corpId: 'bad' });
   stubJsonFetch(() => ({ errcode: 40013, errmsg: 'invalid corpid' }));
-  await expect(
-    getWecomCorpToken({
-      corpId: 'bad',
-      corpSecret: 'sec',
-      store: new CacheMemoryAdapter(),
-    }),
-  ).rejects.toThrow(
-    i18n.t('corp_token_failed', { errcode: '40013', errmsg: 'invalid corpid' }),
+  await expect(client.getAccessToken()).rejects.toThrow(
+    i18n.t('access_token_failed', { errcode: '40013', errmsg: 'invalid corpid' }),
   );
 
   const store = new CacheMemoryAdapter();
-  const client = new WecomOAuth2Client({
-    scopes: ['snsapi_base'],
-    corpId: 'ww',
-    corpSecret: 'sec',
-    agentId: 1,
-    redirectUri: 'https://example.com/cb',
-    store,
-    onProfile: async ({ token }) => token.userid,
-  });
-  const raw = await client.getAuthorizationUrl(mockCtx());
+  const oauth = createClient({ store });
+  const raw = await oauth.getAuthorizationUrl(mockCtx());
   const state = new URL(raw.replace(/#wechat_redirect$/, '')).searchParams.get('state')!;
 
   stubJsonFetch((url) => {
@@ -259,13 +256,47 @@ test('gettoken / getuserinfo 失败 errcode', async () => {
     }
     return { errcode: 40029, errmsg: 'invalid code' };
   });
-  await expect(client.callback(mockCtx({ code: 'bad', state }))).rejects.toThrow(
+  await expect(oauth.callback(mockCtx({ code: 'bad', state }))).rejects.toThrow(
     i18n.t('userinfo_failed', { errcode: '40029', errmsg: 'invalid code' }),
   );
 });
 
+test('getAccessToken：并发只向企微换一次票', async () => {
+  const client = createClient();
+  let resolveFetch!: (value: unknown) => void;
+  const fetchGate = new Promise((resolve) => {
+    resolveFetch = resolve;
+  });
+  const fetchMock = vi.fn(async () => {
+    await fetchGate;
+    return {
+      ok: true,
+      status: 200,
+      json: async () => ({
+        errcode: 0,
+        access_token: 'at_sf',
+        expires_in: 7200,
+      }),
+    };
+  });
+  vi.stubGlobal('fetch', fetchMock);
+
+  const pending = Promise.all([
+    client.getAccessToken(),
+    client.getAccessToken(),
+    client.getAccessToken(),
+  ]);
+  await vi.waitFor(() => expect(fetchMock).toHaveBeenCalledTimes(1));
+  resolveFetch(undefined);
+  await expect(pending).resolves.toEqual(['at_sf', 'at_sf', 'at_sf']);
+  expect(fetchMock).toHaveBeenCalledTimes(1);
+});
+
 test('access_token 失效时清缓存并重试 getuserinfo', async () => {
-  const store = new CacheMemoryAdapter();
+  const client = createClient();
+  const raw = await client.getAuthorizationUrl(mockCtx());
+  const state = new URL(raw.replace(/#wechat_redirect$/, '')).searchParams.get('state')!;
+
   let tokenCalls = 0;
   let userCalls = 0;
 
@@ -285,19 +316,55 @@ test('access_token 失效时清缓存并重试 getuserinfo', async () => {
     return { errcode: 0, userid: 'u1' };
   });
 
-  const token = await exchangeWecomCode({
-    corpId: 'ww',
-    corpSecret: 'sec',
-    agentId: 1,
-    code: 'c',
-    store,
+  await expect(client.callback(mockCtx({ code: 'c', state }))).resolves.toMatchObject({
+    userid: 'u1',
   });
-  expect(token.userid).toBe('u1');
   expect(tokenCalls).toBe(2);
   expect(userCalls).toBe(2);
 });
 
-test('getWecomCorpToken / invalidate 按 agentId 隔离缓存键', async () => {
+test('assertOk：成功时剥掉 errcode/errmsg', () => {
+  const client = createClient();
+  const data = client.assertOk<{ department: { id: number }[] }>({
+    errcode: 0,
+    errmsg: 'ok',
+    department: [{ id: 1 }],
+  });
+  expect(data).toEqual({ department: [{ id: 1 }] });
+  expect(data).not.toHaveProperty('errcode');
+  expect(data).not.toHaveProperty('errmsg');
+});
+
+test('withAccessToken：assertOk 遇 42001 清缓存后重试', async () => {
+  const client = createClient();
+  let tokenCalls = 0;
+
+  stubJsonFetch(() => {
+    tokenCalls += 1;
+    return {
+      errcode: 0,
+      access_token: tokenCalls === 1 ? 'stale' : 'fresh',
+      expires_in: 7200,
+    };
+  });
+
+  let attempt = 0;
+  await expect(
+    client.withAccessToken(async (accessToken) => {
+      attempt += 1;
+      if (attempt === 1) {
+        expect(accessToken).toBe('stale');
+        client.assertOk({ errcode: 42001, errmsg: 'access_token expired' });
+      }
+      expect(accessToken).toBe('fresh');
+      return 'ok';
+    }),
+  ).resolves.toBe('ok');
+  expect(attempt).toBe(2);
+  expect(tokenCalls).toBe(2);
+});
+
+test('getAccessToken / deleteAccessToken 按 agentId 隔离缓存键', async () => {
   const store = new CacheMemoryAdapter();
   let tokenCalls = 0;
 
@@ -310,51 +377,24 @@ test('getWecomCorpToken / invalidate 按 agentId 隔离缓存键', async () => {
     };
   });
 
-  const a = await getWecomCorpToken({
-    corpId: 'ww',
-    corpSecret: 'sec-a',
-    agentId: 1,
-    store,
-  });
-  const b = await getWecomCorpToken({
-    corpId: 'ww',
-    corpSecret: 'sec-b',
-    agentId: 2,
-    store,
-  });
-  expect(a).toBe('at-1');
-  expect(b).toBe('at-2');
+  const a = createClient({ corpSecret: 'sec-a', agentId: 1, store });
+  const b = createClient({ corpSecret: 'sec-b', agentId: 2, store });
+
+  await expect(a.getAccessToken()).resolves.toBe('at-1');
+  await expect(b.getAccessToken()).resolves.toBe('at-2');
   expect(tokenCalls).toBe(2);
 
-  // 命中各自缓存
-  await expect(
-    getWecomCorpToken({ corpId: 'ww', corpSecret: 'sec-a', agentId: 1, store }),
-  ).resolves.toBe('at-1');
+  await expect(a.getAccessToken()).resolves.toBe('at-1');
   expect(tokenCalls).toBe(2);
 
-  await invalidateWecomCorpToken(store, 'ww', { agentId: 1 });
-  await expect(
-    getWecomCorpToken({ corpId: 'ww', corpSecret: 'sec-a', agentId: 1, store }),
-  ).resolves.toBe('at-3');
-  // agentId=2 未受影响
-  await expect(
-    getWecomCorpToken({ corpId: 'ww', corpSecret: 'sec-b', agentId: 2, store }),
-  ).resolves.toBe('at-2');
+  await a.deleteAccessToken();
+  await expect(a.getAccessToken()).resolves.toBe('at-3');
+  await expect(b.getAccessToken()).resolves.toBe('at-2');
   expect(tokenCalls).toBe(3);
-
-  expect(corpTokenCacheKey('ww', 1)).toBe('wecom:corp_token:ww:1');
 });
 
 test('refresh / revoke 不支持', async () => {
-  const client = new WecomOAuth2Client({
-    corpId: 'ww',
-    corpSecret: 'sec',
-    agentId: 1,
-    redirectUri: 'https://example.com/cb',
-    store: new CacheMemoryAdapter(),
-    scopes: ['snsapi_base'],
-    onProfile: async ({ token }) => token.userid,
-  });
+  const client = createClient();
   await expect(client.refresh('x')).rejects.toThrow(i18n.t('refresh_unsupported'));
   await expect(client.revoke('x')).rejects.toThrow(i18n.t('revoke_unsupported'));
 });

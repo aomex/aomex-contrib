@@ -15,15 +15,14 @@
 
 ## 本包能做什么 / 不能做什么
 
-| 场景                             | 支持                                          |
-| -------------------------------- | --------------------------------------------- |
-| 自建应用网页授权（企微内打开）   | ✅ `WecomOAuth2Client`                        |
-| 拿应用 `access_token` 调其它 API | ✅ `getCorpAccessToken` 等                    |
-| 已有 `code` 只换身份             | ✅ `exchangeWecomCode`                        |
-| 第三方应用 / 服务商 `suite` 授权 | ❌                                            |
-| 企业微信 Web 扫码登录组件        | ❌                                            |
-| 个人微信 / 公众号 OAuth          | 见 `@aomex-contrib/oauth2-wechat`             |
-| 小程序登录（非 OAuth）           | 见 `@aomex-contrib/wechat-mini-program-login` |
+| 场景                                | 支持                                          |
+| ----------------------------------- | --------------------------------------------- |
+| 自建应用网页授权（企微内打开）      | ✅ `WecomOAuth2Client`                        |
+| 应用级 `access_token`（`gettoken`） | ✅ `getAccessToken` / `withAccessToken`       |
+| 第三方应用 / 服务商 `suite` 授权    | ❌                                            |
+| 企业微信 Web 扫码登录组件           | ❌                                            |
+| 个人微信 / 公众号 OAuth             | 见 `@aomex-contrib/oauth2-wechat`             |
+| 小程序登录（非 OAuth）              | 见 `@aomex-contrib/wechat-mini-program-login` |
 
 ---
 
@@ -87,14 +86,14 @@ WECOM_AGENT_ID=1000002
 `store` 同时用于：
 
 1. **OAuth `state`**：防 CSRF，发起登录时写入，回调时校验后删除
-2. **应用 `access_token`**：`gettoken` 结果，key 形如 `wecom:corp_token:${corpId}:${agentId}`
+2. **应用 `access_token`**：`getAccessToken()` / 换身份内部都会用到，key 形如 `wecom:corp_token:${corpId}:${agentId}`
 
 | 环境     | 推荐                        | 说明                                  |
 | -------- | --------------------------- | ------------------------------------- |
 | 单机试玩 | `CacheMemoryAdapter`        | 进程重启丢失；多进程/多副本会各管各的 |
-| 生产     | Redis 等实现 `CacheAdapter` | 多实例共享 state 与 corp token        |
+| 生产     | Redis 等实现 `CacheAdapter` | 多实例共享 state 与应用 token         |
 
-应用 token 缓存 TTL：`max(60, expires_in - 300)` 秒。企微默认 `expires_in=7200`，所以常见约 **6900 秒（1 小时 55 分）**。过期后下次调用会重新 `gettoken`。
+详见第 7 节：`getAccessToken` 是干什么的、和 `callback` 身份字段有何区别。
 
 ---
 
@@ -126,7 +125,7 @@ const wecom = new WecomOAuth2Client({
 | `stateTtl`            | 基类默认 | state 在 store 里的存活时间                                           |
 | `redirectUri`         | （必填） | 也可写成 `(ctx) => string` 按请求动态拼                               |
 | `authorizationParams` | `{}`     | 附加到授权 URL 的额外 query（勿覆盖官方保留字段）                     |
-| `onProfile`           | 省略     | 省略时 `callback` 返回 `WecomProfile`（无伪装 access_token）          |
+| `onProfile`           | 省略     | 省略时 `callback` 返回 `WecomProfile`                                 |
 
 ### 5.2 挂两个路由
 
@@ -165,7 +164,7 @@ router.get('/oauth/wecom/callback', {
 
 ## 6. `callback` 返回什么
 
-默认类型为 `WecomProfile`（**不含**伪装的 OAuth `access_token`）：
+默认类型为 `WecomProfile`（即 `auth/getuserinfo` 的身份字段，**没有**用户级 OAuth `access_token`）：
 
 | 字段              | 含义                                                        |
 | ----------------- | ----------------------------------------------------------- |
@@ -173,8 +172,6 @@ router.get('/oauth/wecom/callback', {
 | `openid`          | 非企业成员时的标识                                          |
 | `user_ticket`     | `snsapi_privateinfo` 且在可见范围时可能有，用于再拉敏感信息 |
 | `external_userid` | 外部联系人场景可能有                                        |
-
-换票内部仍有 `WecomTokenSet`（兼容基类，`access_token` 仅为占位），业务请用 `WecomProfile` / `onProfile` 入参里的 `profile`。
 
 ### 用 `onProfile` 映射成你自己的用户
 
@@ -196,58 +193,40 @@ const user = await wecom.callback(ctx);
 
 ---
 
-## 7. 应用 access_token（调通讯录 / 发消息等）
+## 7. 应用级 `getAccessToken`（`gettoken`）
 
-登录换身份和「拿应用 token 调企微业务 API」是两件事。后者用：
+登录换身份（`callback` → `WecomProfile`）和「拿应用 token 调企微业务 API」是两件事。
+
+|      | `callback` 返回的 `WecomProfile`           | `getAccessToken()`                   |
+| ---- | ------------------------------------------ | ------------------------------------ |
+| 内容 | `userid` / `openid` / `user_ticket` 等身份 | 应用 `access_token` 字符串           |
+| 来源 | `auth/getuserinfo`                         | `cgi-bin/gettoken`                   |
+| 用途 | 识别成员、建本地账号                       | 调通讯录、发消息、应用管理等业务 API |
+
+`callback` 内部换身份时也会用到这份应用 token（经 `store` 缓存）。自己调其它企微接口时优先用 `withAccessToken`：
 
 ```ts
-// 与上面同一个 wecom 实例；命中 store 缓存则不打 gettoken
-const accessToken = await wecom.getCorpAccessToken();
-```
-
-不用 `WecomOAuth2Client` 时：
-
-```ts
-import { getWecomCorpToken } from '@aomex-contrib/oauth2-wecom';
-
-const accessToken = await getWecomCorpToken({
-  corpId: process.env.WECOM_CORP_ID!,
-  corpSecret: process.env.WECOM_CORP_SECRET!,
-  agentId: process.env.WECOM_AGENT_ID!, // 多应用必传，与 WecomOAuth2Client 缓存键一致
-  store, // 建议与登录共用同一个 store，避免重复 gettoken
+const { department } = await wecom.withAccessToken(async (accessToken) => {
+  const res = await fetch(
+    `https://qyapi.weixin.qq.com/cgi-bin/department/list?access_token=${accessToken}`,
+  );
+  // 校验 errcode；成功则去掉 errcode/errmsg，返回业务字段（40014/42001 会触发清缓存重试）
+  return wecom.assertOk<{ department: { id: number; name: string }[] }>(await res.json());
 });
 ```
+
+也可以直接 `getAccessToken()`；确认票废时可再 `deleteAccessToken()` 清本地缓存（不会调用企微作废接口）。
 
 注意：
 
 - **不要**把应用 `access_token` 下发给前端
-- 缓存失效 / 企微返回 token 无效时，用 `invalidateWecomCorpToken(store, corpId, { agentId })` 清掉再取（须与写入时的 `agentId` / `cacheKey` 一致）
-- 多应用共用一个 CorpID 时务必传 `agentId`，否则默认 key 仅含 `corpId`，不同 `corpSecret` 的 token 会互相覆盖
+- `callback` / `withAccessToken` 遇到 40014 / 42001 会自动清缓存并重取后再调一次
+- 缓存 TTL：`max(60, expires_in - 300)` 秒；未命中经 `singleFlight`
+- 多应用共用一个 CorpID 时，每个应用用各自的 `WecomOAuth2Client`（不同 `agentId` / `corpSecret`），缓存键按 `corpId` + `agentId` 隔离
 
 ---
 
-## 8. 已有 `code`，只想换身份
-
-例如你自己拼了授权 URL、或前端已经把 `code` 传到服务端：
-
-```ts
-import { exchangeWecomCode } from '@aomex-contrib/oauth2-wecom';
-
-const token = await exchangeWecomCode({
-  corpId: process.env.WECOM_CORP_ID!,
-  corpSecret: process.env.WECOM_CORP_SECRET!,
-  agentId: process.env.WECOM_AGENT_ID!,
-  code,
-  store,
-});
-// token.userid / token.openid
-```
-
-这不会帮你校验 `state`；防 CSRF 需你自己做。返回值里的 `access_token` 含义同第 6 节——**不是**应用令牌。
-
----
-
-## 9. 明确不支持的能力
+## 8. 明确不支持的能力
 
 - `refresh()` / `revoke()`：会抛错（企微此场景无用户级 refresh / RFC 7009 revoke）
 - PKCE：已关闭（`pkce: false`）
@@ -255,13 +234,13 @@ const token = await exchangeWecomCode({
 
 ---
 
-## 10. 常见问题
+## 9. 常见问题
 
 **Q: 回调报 state 无效 / 过期？**  
 A: 多实例却用了内存 `store`；或回调域名与发起登录不是同一套服务；或 `stateTtl` 太短。生产请用共享 Redis。
 
 **Q: 能拿到 userid，但调其它企微 API 401？**  
-A: 调业务 API 要用应用 token：`getCorpAccessToken()`，不要用 `callback` 返回的 `access_token`。
+A: 调业务 API 要用应用 token：`withAccessToken` / `getAccessToken()`；`callback` 返回的是身份字段（`userid` 等），没有用户级 OAuth token。
 
 **Q: 浏览器能打开页面，授权却失败？**  
 A: 确认是在**企微 App 内**打开；可信域名是否已配；`redirectUri` 是否 https 且域名完全一致。

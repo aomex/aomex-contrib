@@ -6,7 +6,8 @@ export default I18n.satisfies(zh).define({
   corp_id_empty: 'corpId ne sme biti prazen',
   corp_secret_empty: 'corpSecret ne sme biti prazen',
   agent_id_empty: 'agentId ne sme biti prazen',
-  corp_token_failed: 'Pridobivanje WeCom access_token ni uspelo: {{errcode}} {{errmsg}}',
+  access_token_failed:
+    'Pridobivanje WeCom access_token ni uspelo: {{errcode}} {{errmsg}}',
   userinfo_failed:
     'Pridobivanje identitete uporabnika WeCom ni uspelo: {{errcode}} {{errmsg}}',
   userinfo_missing_identity: 'WeCom getuserinfo ni vrnil userid/openid',

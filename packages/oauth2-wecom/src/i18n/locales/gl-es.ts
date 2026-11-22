@@ -6,7 +6,7 @@ export default I18n.satisfies(zh).define({
   corp_id_empty: 'corpId non pode estar baleiro',
   corp_secret_empty: 'corpSecret non pode estar baleiro',
   agent_id_empty: 'agentId non pode estar baleiro',
-  corp_token_failed:
+  access_token_failed:
     'Fallou a obtención de access_token de WeCom: {{errcode}} {{errmsg}}',
   userinfo_failed:
     'Fallou a obtención da identidade de usuario de WeCom: {{errcode}} {{errmsg}}',

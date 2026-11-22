@@ -8,6 +8,7 @@ export default I18n.satisfies(zh).define({
   token_failed: 'WeChat access_token လဲလှယ်မှု မအောင်မြင်ပါ: {{errcode}} {{errmsg}}',
   refresh_failed: 'WeChat access_token ပြန်လည်ဆန်းသစ်မှု မအောင်မြင်ပါ: {{errcode}} {{errmsg}}',
   userinfo_failed: 'WeChat အသုံးပြုသူအချက်အလက် ရယူမှု မအောင်မြင်ပါ: {{errcode}} {{errmsg}}',
+  access_token_failed: 'WeChat get access_token failed: {{errcode}} {{errmsg}}',
   refresh_token_empty: 'refreshToken သည် ဗလာမဖြစ်ရပါ',
   revoke_unsupported: 'WeChat SNS ခွင့်ပြုချက်သည် revoke ကို မပံ့ပိုးပါ',
 });

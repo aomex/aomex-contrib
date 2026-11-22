@@ -6,7 +6,7 @@ export default I18n.satisfies(zh).define({
   corp_id_empty: 'corpId får inte vara tomt',
   corp_secret_empty: 'corpSecret får inte vara tomt',
   agent_id_empty: 'agentId får inte vara tomt',
-  corp_token_failed:
+  access_token_failed:
     'Hämtning av WeCom access_token misslyckades: {{errcode}} {{errmsg}}',
   userinfo_failed:
     'Hämtning av WeCom-användaridentitet misslyckades: {{errcode}} {{errmsg}}',

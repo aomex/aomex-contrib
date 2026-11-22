@@ -507,3 +507,130 @@ test('refresh 失败 errcode', async () => {
     }),
   );
 });
+
+test('withAccessToken：assertOk 遇 40001 清缓存后重试', async () => {
+  const mp = new WechatMpOAuth2Client({
+    appId: 'wx_mp',
+    appSecret: 'sec',
+    redirectUri: 'https://example.com/cb',
+    store: new CacheMemoryAdapter(),
+    scopes: ['snsapi_base'],
+  });
+
+  let tokenN = 0;
+  vi.stubGlobal(
+    'fetch',
+    vi.fn(async () => ({
+      ok: true,
+      status: 200,
+      json: async () => {
+        tokenN += 1;
+        return { access_token: `mp_at_${tokenN}`, expires_in: 7200 };
+      },
+    })),
+  );
+
+  let attempt = 0;
+  const result = await mp.withAccessToken(async (accessToken) => {
+    attempt += 1;
+    if (attempt === 1) {
+      expect(accessToken).toBe('mp_at_1');
+      mp.assertOk({ errcode: 40001, errmsg: 'invalid credential' });
+    }
+    expect(accessToken).toBe('mp_at_2');
+    return 'ok';
+  });
+  expect(result).toBe('ok');
+  expect(attempt).toBe(2);
+  expect(tokenN).toBe(2);
+});
+
+test('getAccessToken：拉取并缓存；delete 后重取', async () => {
+  const mp = new WechatMpOAuth2Client({
+    appId: 'wx_mp',
+    appSecret: 'sec',
+    redirectUri: 'https://example.com/cb',
+    store: new CacheMemoryAdapter(),
+    scopes: ['snsapi_base'],
+  });
+
+  const fetchMock = vi.fn(async (input: string | URL) => {
+    const url = new URL(String(input));
+    expect(url.origin + url.pathname).toBe('https://api.weixin.qq.com/cgi-bin/token');
+    expect(url.searchParams.get('grant_type')).toBe('client_credential');
+    expect(url.searchParams.get('appid')).toBe('wx_mp');
+    expect(url.searchParams.get('secret')).toBe('sec');
+    return {
+      ok: true,
+      status: 200,
+      json: async () => ({ access_token: 'mp_at_1', expires_in: 7200 }),
+    };
+  });
+  vi.stubGlobal('fetch', fetchMock);
+
+  await expect(mp.getAccessToken()).resolves.toBe('mp_at_1');
+  await expect(mp.getAccessToken()).resolves.toBe('mp_at_1');
+  expect(fetchMock).toHaveBeenCalledTimes(1);
+
+  await mp.deleteAccessToken();
+  fetchMock.mockClear();
+  fetchMock.mockImplementation(async () => ({
+    ok: true,
+    status: 200,
+    json: async () => ({ access_token: 'mp_at_2', expires_in: 7200 }),
+  }));
+  await expect(mp.getAccessToken()).resolves.toBe('mp_at_2');
+  expect(fetchMock).toHaveBeenCalledTimes(1);
+});
+
+test('getAccessToken：并发只向微信换一次票', async () => {
+  const mp = new WechatMpOAuth2Client({
+    appId: 'wx_mp',
+    appSecret: 'sec',
+    redirectUri: 'https://example.com/cb',
+    store: new CacheMemoryAdapter(),
+    scopes: ['snsapi_base'],
+  });
+
+  let resolveFetch!: (value: unknown) => void;
+  const fetchGate = new Promise((resolve) => {
+    resolveFetch = resolve;
+  });
+  const fetchMock = vi.fn(async () => {
+    await fetchGate;
+    return {
+      ok: true,
+      status: 200,
+      json: async () => ({ access_token: 'mp_sf', expires_in: 7200 }),
+    };
+  });
+  vi.stubGlobal('fetch', fetchMock);
+
+  const pending = Promise.all([
+    mp.getAccessToken(),
+    mp.getAccessToken(),
+    mp.getAccessToken(),
+  ]);
+  await vi.waitFor(() => expect(fetchMock).toHaveBeenCalledTimes(1));
+  resolveFetch(undefined);
+  await expect(pending).resolves.toEqual(['mp_sf', 'mp_sf', 'mp_sf']);
+  expect(fetchMock).toHaveBeenCalledTimes(1);
+});
+
+test('getAccessToken：errcode 抛错', async () => {
+  const mp = new WechatMpOAuth2Client({
+    appId: 'wx_mp',
+    appSecret: 'sec',
+    redirectUri: 'https://example.com/cb',
+    store: new CacheMemoryAdapter(),
+    scopes: ['snsapi_base'],
+  });
+
+  stubJsonFetch(() => ({ errcode: 40013, errmsg: 'invalid appid' }));
+  await expect(mp.getAccessToken()).rejects.toThrow(
+    i18n.t('access_token_failed', {
+      errcode: '40013',
+      errmsg: 'invalid appid',
+    }),
+  );
+});

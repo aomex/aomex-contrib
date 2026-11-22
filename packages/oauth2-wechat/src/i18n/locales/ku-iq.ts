@@ -10,6 +10,7 @@ export default I18n.satisfies(zh).define({
     'نوێکردنەوەی access_token ی WeChat سەرکەوتوو نەبوو: {{errcode}} {{errmsg}}',
   userinfo_failed:
     'وەرگرتنی زانیاری بەکارهێنەری WeChat سەرکەوتوو نەبوو: {{errcode}} {{errmsg}}',
+  access_token_failed: 'WeChat get access_token failed: {{errcode}} {{errmsg}}',
   refresh_token_empty: 'refreshToken نابێت بەتاڵ بێت',
   revoke_unsupported: 'ڕێپێدانی SNS ی WeChat پشتگیری revoke ناکات',
 });

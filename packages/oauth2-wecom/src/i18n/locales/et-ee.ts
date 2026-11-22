@@ -6,7 +6,8 @@ export default I18n.satisfies(zh).define({
   corp_id_empty: 'corpId ei tohi olla tühi',
   corp_secret_empty: 'corpSecret ei tohi olla tühi',
   agent_id_empty: 'agentId ei tohi olla tühi',
-  corp_token_failed: 'WeComi access_tokeni hankimine ebaõnnestus: {{errcode}} {{errmsg}}',
+  access_token_failed:
+    'WeComi access_tokeni hankimine ebaõnnestus: {{errcode}} {{errmsg}}',
   userinfo_failed:
     'WeComi kasutajaidentiteedi hankimine ebaõnnestus: {{errcode}} {{errmsg}}',
   userinfo_missing_identity: 'WeCom getuserinfo ei tagastanud userid/openid',

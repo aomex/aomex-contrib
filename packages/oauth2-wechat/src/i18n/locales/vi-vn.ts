@@ -8,6 +8,7 @@ export default I18n.satisfies(zh).define({
   token_failed: 'Đổi access_token WeChat thất bại: {{errcode}} {{errmsg}}',
   refresh_failed: 'Làm mới access_token WeChat thất bại: {{errcode}} {{errmsg}}',
   userinfo_failed: 'Lấy thông tin người dùng WeChat thất bại: {{errcode}} {{errmsg}}',
+  access_token_failed: 'WeChat get access_token failed: {{errcode}} {{errmsg}}',
   refresh_token_empty: 'refreshToken không được để trống',
   revoke_unsupported: 'Ủy quyền SNS WeChat không hỗ trợ revoke',
 });

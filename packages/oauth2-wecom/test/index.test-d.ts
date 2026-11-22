@@ -1,6 +1,6 @@
 import { CacheMemoryAdapter } from '@aomex/cache/memory';
 import { expectType, type TypeEqual } from 'ts-expect';
-import { WecomOAuth2Client, type WecomProfile, type WecomTokenSet } from '../src';
+import { WecomOAuth2Client, type WecomProfile } from '../src';
 
 const defaultClient = new WecomOAuth2Client({
   corpId: 'ww',
@@ -20,10 +20,11 @@ new WecomOAuth2Client({
   redirectUri: 'https://example.com/cb',
   store: new CacheMemoryAdapter(),
   scopes: ['snsapi_base'],
-  onProfile({ token, profile }) {
-    expectType<TypeEqual<WecomTokenSet, typeof token>>(true);
+  onProfile({ profile }) {
     expectType<TypeEqual<WecomProfile, typeof profile>>(true);
     expectType<TypeEqual<string | undefined, typeof profile.userid>>(true);
+    // @ts-expect-error WecomProfile 无伪装 access_token
+    profile.access_token;
     return { id: profile.userid ?? profile.openid };
   },
 });

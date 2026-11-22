@@ -9,6 +9,7 @@ export default I18n.satisfies(zh).define({
   refresh_failed: 'WeChat access_token freskatzeak huts egin du: {{errcode}} {{errmsg}}',
   userinfo_failed:
     'WeChat erabiltzaile-informazioa eskuratzeak huts egin du: {{errcode}} {{errmsg}}',
+  access_token_failed: 'WeChat get access_token failed: {{errcode}} {{errmsg}}',
   refresh_token_empty: 'refreshToken ezin da hutsik egon',
   revoke_unsupported: 'WeChat SNS baimenak ez du revoke onartzen',
 });

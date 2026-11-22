@@ -7,6 +7,7 @@ export const en = I18n.satisfies(zh).define({
   token_failed: 'WeChat access_token exchange failed: {{errcode}} {{errmsg}}',
   refresh_failed: 'WeChat access_token refresh failed: {{errcode}} {{errmsg}}',
   userinfo_failed: 'WeChat userinfo failed: {{errcode}} {{errmsg}}',
+  access_token_failed: 'WeChat get access_token failed: {{errcode}} {{errmsg}}',
   refresh_token_empty: 'refreshToken must not be empty',
   revoke_unsupported: 'WeChat SNS authorization does not support revoke',
 });

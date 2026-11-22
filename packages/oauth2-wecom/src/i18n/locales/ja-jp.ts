@@ -6,7 +6,7 @@ export default I18n.satisfies(zh).define({
   corp_id_empty: 'corpId は空にできません',
   corp_secret_empty: 'corpSecret は空にできません',
   agent_id_empty: 'agentId は空にできません',
-  corp_token_failed: 'WeCom の access_token 取得に失敗しました：{{errcode}} {{errmsg}}',
+  access_token_failed: 'WeCom の access_token 取得に失敗しました：{{errcode}} {{errmsg}}',
   userinfo_failed: 'WeCom の訪問ユーザー身元取得に失敗しました：{{errcode}} {{errmsg}}',
   userinfo_missing_identity: 'WeCom getuserinfo が userid/openid を返しませんでした',
   refresh_unsupported:

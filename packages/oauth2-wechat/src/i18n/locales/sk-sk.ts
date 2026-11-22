@@ -9,6 +9,7 @@ export default I18n.satisfies(zh).define({
   refresh_failed: 'Obnovenie access_token WeChat zlyhalo: {{errcode}} {{errmsg}}',
   userinfo_failed:
     'Získanie informácií o používateľovi WeChat zlyhalo: {{errcode}} {{errmsg}}',
+  access_token_failed: 'WeChat get access_token failed: {{errcode}} {{errmsg}}',
   refresh_token_empty: 'refreshToken nesmie byť prázdny',
   revoke_unsupported: 'Autorizácia WeChat SNS nepodporuje revoke',
 });

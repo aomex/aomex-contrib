@@ -23,7 +23,7 @@
 | 自动拉 `/sns/userinfo`（在合适 scope 下）          | ✅                                                                          |
 | 小程序 / 小游戏登录                                | ❌ 用 [`wechat-mini-program-login`](../wechat-mini-program-login/README.md) |
 | 企业微信                                           | ❌ 用 wecom 包                                                              |
-| 公众号**全局** `cgi-bin/token`（模板消息等）       | ❌ 本包未封装                                                               |
+| 公众号全局 `access_token`（`cgi-bin/token`）       | ✅ `getAccessToken` / `withAccessToken`                                     |
 | 第三方平台 component 代授权                        | ❌                                                                          |
 
 ---
@@ -51,14 +51,17 @@ pnpm add @aomex-contrib/oauth2-wechat @aomex/oauth2-client
 
 ## 3. store 说明
 
-`WechatOpenOAuth2Client` / `WechatMpOAuth2Client` 的 `store` 用于保存 OAuth **`state`（防 CSRF）**。
+`store` 用途：
+
+1. OAuth **`state`（防 CSRF）**——`WechatOpenOAuth2Client` / `WechatMpOAuth2Client` 都需要
+2. 公众号全局 `cgi-bin/token`——仅 `WechatMpOAuth2Client#getAccessToken` 会写入（见第 8 节）
 
 | 环境     | 推荐                    | 说明                     |
 | -------- | ----------------------- | ------------------------ |
 | 单机试玩 | `CacheMemoryAdapter`    | 重启丢失；多副本各管各的 |
 | 生产     | Redis 等 `CacheAdapter` | 多实例必须共享           |
 
-与企微包不同：本包**不会**在 `store` 里缓存「应用全局 access_token」。网页换票拿到的是**用户级** SNS `access_token`，每次登录一份，由你决定是否自己持久化。
+网页授权换票得到的 SNS `access_token` 在 `callback` 结果里（用户级、每次登录一份）；**不会**进 `store`。全局票才走 `getAccessToken` + `store`。
 
 ---
 
@@ -244,17 +247,48 @@ const renewed = await refreshWechatToken({
 
 ---
 
-## 8. 明确不支持 / 易混淆点
+## 8. 公众号全局 `getAccessToken`（`cgi-bin/token`）
+
+与网页授权换到的**用户级 SNS** `access_token` **不是同一个**：
+
+|      | `callback` / 换票里的 SNS token   | `getAccessToken()`                   |
+| ---- | --------------------------------- | ------------------------------------ |
+| 来源 | `sns/oauth2/access_token`         | `cgi-bin/token`（client_credential） |
+| 归属 | 某次用户授权                      | 整个公众号应用                       |
+| 用途 | 拉 `/sns/userinfo` 等授权用户接口 | 大多数服务端业务 API                 |
+
+`getAccessToken()` 常见用途（不完全列举）：模板消息 / 客服消息、自定义菜单、素材管理、用户管理（关注列表、标签）、JS-SDK 的 `jsapi_ticket`、带参二维码、长链转短链、部分数据分析及其它 `cgi-bin/*`。
+
+自己调业务 API 时优先用 `withAccessToken`（票失效会自动清缓存重试一次）：
+
+```ts
+const menu = await mp.withAccessToken(async (accessToken) => {
+  const res = await fetch(
+    `https://api.weixin.qq.com/cgi-bin/menu/get?access_token=${accessToken}`,
+  );
+  // 校验 errcode；成功则去掉 errcode/errmsg（40001/42001 会触发清缓存重试）
+  return mp.assertOk<{ is_menu_open: number; selfmenu_info?: unknown }>(await res.json());
+});
+```
+
+也可以直接 `getAccessToken()`；若业务侧已确认票废，可再 `deleteAccessToken()` 清本地缓存（不会调用微信作废接口）。
+
+缓存 TTL：`max(60, expires_in - 300)` 秒；未命中时经 `singleFlight`，并发只会换一次票。  
+**不要**把全局 `access_token` 下发给前端。
+
+---
+
+## 9. 明确不支持 / 易混淆点
 
 - **`revoke()`**：微信 SNS 无 RFC 7009，调用会抛错
 - **PKCE**：已关闭
-- **公众号发模板消息、调业务接口**需要的全局 `access_token`（`cgi-bin/token`）≠ 本包换到的用户 SNS token；本包未提供缓存封装
+- **公众号业务接口**用 `withAccessToken` / `getAccessToken()`，不要用 `callback` 返回的用户 SNS `access_token`
 - **企业微信**：用 `@aomex-contrib/oauth2-wecom`
 - 网站扫码与公众号网页授权的授权域名、AppID **不能混用**
 
 ---
 
-## 9. 常见问题
+## 10. 常见问题
 
 **Q: 回调 state 无效？**  
 A: 多实例用了内存 store；或回调打到另一台没有 state 的机器。生产用 Redis。

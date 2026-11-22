@@ -8,6 +8,7 @@ export default I18n.satisfies(zh).define({
   token_failed: 'فشل تبادل access_token لـ WeChat: {{errcode}} {{errmsg}}',
   refresh_failed: 'فشل تحديث access_token لـ WeChat: {{errcode}} {{errmsg}}',
   userinfo_failed: 'فشل الحصول على معلومات مستخدم WeChat: {{errcode}} {{errmsg}}',
+  access_token_failed: 'WeChat get access_token failed: {{errcode}} {{errmsg}}',
   refresh_token_empty: 'يجب ألا يكون refreshToken فارغًا',
   revoke_unsupported: 'تفويض WeChat SNS لا يدعم revoke',
 });

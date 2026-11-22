@@ -6,7 +6,7 @@ export default I18n.satisfies(zh).define({
   corp_id_empty: 'corpId nie może być pusty',
   corp_secret_empty: 'corpSecret nie może być pusty',
   agent_id_empty: 'agentId nie może być pusty',
-  corp_token_failed:
+  access_token_failed:
     'Pobranie access_token WeCom nie powiodło się: {{errcode}} {{errmsg}}',
   userinfo_failed:
     'Pobranie tożsamości użytkownika WeCom nie powiodło się: {{errcode}} {{errmsg}}',

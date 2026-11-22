@@ -8,6 +8,7 @@ export default I18n.satisfies(zh).define({
   token_failed: 'WeChat access_token skipti mistókust: {{errcode}} {{errmsg}}',
   refresh_failed: 'WeChat access_token uppfærsla mistókst: {{errcode}} {{errmsg}}',
   userinfo_failed: 'Sókn WeChat notandaupplýsinga mistókst: {{errcode}} {{errmsg}}',
+  access_token_failed: 'WeChat get access_token failed: {{errcode}} {{errmsg}}',
   refresh_token_empty: 'refreshToken má ekki vera autt',
   revoke_unsupported: 'WeChat SNS heimild styður ekki revoke',
 });

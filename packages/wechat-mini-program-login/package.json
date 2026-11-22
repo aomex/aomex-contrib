@@ -1,7 +1,7 @@
 {
   "name": "@aomex-contrib/wechat-mini-program-login",
   "version": "0.1.0",
-  "description": "微信小程序 / 小游戏登录（jscode2session，非 OAuth2）",
+  "description": "微信小程序 / 小游戏登录与手机号（jscode2session + access_token + getPhoneNumber，非 OAuth2）",
   "repository": "git@github.com:aomex/aomex-contrib.git",
   "homepage": "https://aomex.js.org",
   "license": "MIT",
@@ -31,9 +31,13 @@
     "access": "public"
   },
   "peerDependencies": {
-    "@aomex/common": "^4.3.0"
+    "@aomex/cache": "^4.4.0",
+    "@aomex/common": "^4.4.0",
+    "@aomex/web": "^4.4.0"
   },
   "devDependencies": {
-    "@aomex/common": "^4.3.0"
+    "@aomex/cache": "^4.4.0",
+    "@aomex/common": "^4.4.0",
+    "@aomex/web": "^4.4.0"
   }
 }

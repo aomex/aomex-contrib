@@ -6,7 +6,7 @@ export default I18n.satisfies(zh).define({
   corp_id_empty: 'corpId نابێت بەتاڵ بێت',
   corp_secret_empty: 'corpSecret نابێت بەتاڵ بێت',
   agent_id_empty: 'agentId نابێت بەتاڵ بێت',
-  corp_token_failed:
+  access_token_failed:
     'وەرگرتنی access_token ی WeCom سەرکەوتوو نەبوو: {{errcode}} {{errmsg}}',
   userinfo_failed:
     'وەرگرتنی ناسنامەی بەکارهێنەری WeCom سەرکەوتوو نەبوو: {{errcode}} {{errmsg}}',
