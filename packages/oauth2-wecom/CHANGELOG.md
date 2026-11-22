@@ -1,5 +1,11 @@
 # @aomex-contrib/oauth2-wecom
 
+## 0.2.0
+
+### Minor Changes
+
+- [`3a0c0b2`](https://github.com/aomex/aomex-contrib/commit/3a0c0b29390d1c881a68d7d492d61f341354e965) Thanks [@geekact](https://github.com/geekact)! - 应用 token：`getAccessToken`（`singleFlight`）/ `deleteAccessToken` / `withAccessToken` / `assertOk`；`callback` 改为返回 `WecomProfile`（不再伪装用户级 OAuth token）；peer 升至 `@aomex/*` `^4.4.0`
+
 ## 0.1.0
 
 ### Minor Changes

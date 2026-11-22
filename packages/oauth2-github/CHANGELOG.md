@@ -1,5 +1,11 @@
 # @aomex-contrib/oauth2-github
 
+## 0.1.1
+
+### Patch Changes
+
+- [`3cd112e`](https://github.com/aomex/aomex-contrib/commit/3cd112e719a492344f4b80efa9409dd114f17215) Thanks [@geekact](https://github.com/geekact)! - 不再导出厂商预设对象，仅通过客户端类使用
+
 ## 0.1.0
 
 ### Minor Changes

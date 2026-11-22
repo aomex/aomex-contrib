@@ -1,5 +1,11 @@
 # @aomex-contrib/wechat-mini-program-login
 
+## 0.2.0
+
+### Minor Changes
+
+- [`3a0c0b2`](https://github.com/aomex/aomex-contrib/commit/3a0c0b29390d1c881a68d7d492d61f341354e965) Thanks [@geekact](https://github.com/geekact)! - 新增 `getAccessToken` / `deleteAccessToken` / `withAccessToken` / `assertOk` 与新版 `getPhoneNumber`；构造必填 `store`（`singleFlight` 防并发换票）；上游失败抛 `HttpError`；peer 升至 `@aomex/*` `^4.4.0`
+
 ## 0.1.0
 
 ### Minor Changes

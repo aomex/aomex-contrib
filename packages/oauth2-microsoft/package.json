@@ -1,6 +1,6 @@
 {
   "name": "@aomex-contrib/oauth2-microsoft",
-  "version": "0.1.0",
+  "version": "0.1.1",
   "description": "Microsoft / Entra ID OIDC 客户端预设",
   "repository": "git@github.com:aomex/aomex-contrib.git",
   "homepage": "https://aomex.js.org",
