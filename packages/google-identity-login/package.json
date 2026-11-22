@@ -31,12 +31,12 @@
     "access": "public"
   },
   "peerDependencies": {
-    "@aomex/common": "^4.3.0"
+    "@aomex/common": "^4.4.0"
   },
   "dependencies": {
     "jose": "^6.2.0"
   },
   "devDependencies": {
-    "@aomex/common": "^4.3.0"
+    "@aomex/common": "^4.4.0"
   }
 }

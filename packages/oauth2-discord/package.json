@@ -31,15 +31,15 @@
     "access": "public"
   },
   "peerDependencies": {
-    "@aomex/oauth2-client": "^4.3.0"
+    "@aomex/oauth2-client": "^4.4.0"
   },
   "dependencies": {
     "@aomex-contrib/oauth2-preset": "workspace:^"
   },
   "devDependencies": {
-    "@aomex/cache": "^4.3.0",
-    "@aomex/common": "^4.3.0",
-    "@aomex/oauth2-client": "^4.3.0",
-    "@aomex/web": "^4.3.0"
+    "@aomex/cache": "^4.4.0",
+    "@aomex/common": "^4.4.0",
+    "@aomex/oauth2-client": "^4.4.0",
+    "@aomex/web": "^4.4.0"
   }
 }
