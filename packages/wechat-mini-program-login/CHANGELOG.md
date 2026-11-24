@@ -1,5 +1,11 @@
 # @aomex-contrib/wechat-mini-program-login
 
+## 0.3.0
+
+### Minor Changes
+
+- [`208c45f`](https://github.com/aomex/aomex-contrib/commit/208c45fb32be9171f03c9c77c618cf99bbd8788e) Thanks [@geekact](https://github.com/geekact)! - store生命周期懒加载
+
 ## 0.2.0
 
 ### Minor Changes
