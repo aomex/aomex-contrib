@@ -33,16 +33,34 @@ function stubFetch(handler: (url: URL, init?: RequestInit) => unknown) {
   );
 }
 
-test('构造时登记 store 生命周期：connect / disconnect', async () => {
-  const store = new CacheMemoryAdapter();
-  const connect = vi.spyOn(store, 'connect');
-  const disconnect = vi.spyOn(store, 'disconnect');
+test('首次用到 store 时才登记生命周期：connect / disconnect', async () => {
+  const order: string[] = [];
+  class TrackingAdapter extends CacheMemoryAdapter {
+    #connected = false;
+    override async connect() {
+      if (this.#connected) return;
+      this.#connected = true;
+      order.push('init');
+    }
+    override async disconnect() {
+      order.push('destroy');
+    }
+  }
 
-  createClient(store);
-  await vi.waitFor(() => expect(connect).toHaveBeenCalledTimes(1));
+  const client = createClient(new TrackingAdapter());
+  expect(order).toEqual([]);
+
+  stubFetch(() => ({
+    access_token: 'at',
+    expires_in: 7200,
+  }));
+  await client.getAccessToken();
+  expect(order).toEqual(['init']);
+  await client.getAccessToken();
+  expect(order).toEqual(['init']);
 
   await internalDestroyServices([]);
-  expect(disconnect).toHaveBeenCalledTimes(1);
+  expect(order).toEqual(['init', 'destroy']);
 });
 
 test('构造：空 appId / appSecret / store 抛错', () => {

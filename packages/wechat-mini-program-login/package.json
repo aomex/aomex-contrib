@@ -31,13 +31,13 @@
     "access": "public"
   },
   "peerDependencies": {
-    "@aomex/cache": "^4.4.0",
-    "@aomex/common": "^4.4.0",
-    "@aomex/web": "^4.4.0"
+    "@aomex/cache": "^4.5.0",
+    "@aomex/common": "^4.5.0",
+    "@aomex/web": "^4.5.0"
   },
   "devDependencies": {
-    "@aomex/cache": "^4.4.0",
-    "@aomex/common": "^4.4.0",
-    "@aomex/web": "^4.4.0"
+    "@aomex/cache": "^4.5.0",
+    "@aomex/common": "^4.5.0",
+    "@aomex/web": "^4.5.0"
   }
 }

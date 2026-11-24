@@ -8,7 +8,7 @@ export type WechatMiniProgramLoginOptions = {
   /**
    * 缓存适配器，用于缓存小程序全局 `access_token`
    *（`getAccessToken` / `getPhoneNumber` 依赖）。
-   * 构造时会经 `registerLifecycle` 调用 `connect`，应用关停时 `disconnect`
+   * 首次读写 token 缓存时经 `registerLifecycle` 调用 `connect`，关停时 `disconnect`
    */
   store: CacheAdapter;
 };

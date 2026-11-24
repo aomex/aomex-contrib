@@ -68,7 +68,7 @@ const mini = new WechatMiniProgramLoginClient({
   appId: process.env.WX_MINI_APP_ID!,
   appSecret: process.env.WX_MINI_APP_SECRET!,
   // 生产建议 Redis 等，多实例共享 access_token；
-  // 构造时会 registerLifecycle(connect)，应用关停时 disconnect
+  // 首次读写 token 缓存时 registerLifecycle(connect)，关停时 disconnect
   store: new CacheMemoryAdapter(),
 });
 

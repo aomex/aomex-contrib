@@ -42,6 +42,7 @@ export class WechatMiniProgramLoginClient {
   protected readonly store: CacheAdapter;
   protected readonly caching: Caching;
   protected readonly tokenCacheKey: string;
+  protected readyPromise?: Promise<void>;
 
   constructor(opts: WechatMiniProgramLoginOptions) {
     if (!opts.appId) {
@@ -58,11 +59,17 @@ export class WechatMiniProgramLoginClient {
     this.store = opts.store;
     this.caching = new Caching(opts.store);
     this.tokenCacheKey = `wxmini:access_token:${opts.appId}`;
+  }
 
-    void registerLifecycle({
+  /**
+   * 确保 store 已 `connect`（可重入）。首次读写 `access_token` 缓存时登记生命周期。
+   */
+  protected ensureReady(): Promise<void> {
+    this.readyPromise ??= registerLifecycle({
       onInit: () => this.store.connect(),
       onDestroy: () => this.store.disconnect(),
     });
+    return this.readyPromise;
   }
 
   /**
@@ -96,6 +103,7 @@ export class WechatMiniProgramLoginClient {
    * 未命中时用 `singleFlight`，避免并发多次向微信换票（新票会使旧票失效）。
    */
   async getAccessToken(): Promise<string> {
+    await this.ensureReady();
     const cached = await this.caching.get<AccessTokenCache>(this.tokenCacheKey);
     if (cached?.access_token) {
       return cached.access_token;
@@ -134,6 +142,7 @@ export class WechatMiniProgramLoginClient {
 
   /** 删除本应用本地缓存的 `access_token`（不会调用微信作废接口） */
   async deleteAccessToken(): Promise<void> {
+    await this.ensureReady();
     await this.caching.delete(this.tokenCacheKey);
   }
 
