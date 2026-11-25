@@ -1,6 +1,6 @@
 {
   "name": "@aomex-contrib/oauth2-wechat",
-  "version": "0.2.0",
+  "version": "1.0.0",
   "description": "微信 OAuth2 变种：开放平台网站扫码、公众号网页授权、App 换票",
   "repository": "git@github.com:aomex/aomex-contrib.git",
   "homepage": "https://aomex.js.org",

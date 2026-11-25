@@ -1,6 +1,6 @@
 {
   "name": "@aomex-contrib/playwright-service",
-  "version": "0.1.0",
+  "version": "0.2.0",
   "description": "基于 Playwright 的浏览器服务",
   "repository": "git@github.com:aomex/aomex-contrib.git",
   "homepage": "https://aomex.js.org",

@@ -1,5 +1,11 @@
 # @aomex-contrib/wechat-mini-program-login
 
+## 1.0.0
+
+### Major Changes
+
+- [`0d8018b`](https://github.com/aomex/aomex-contrib/commit/0d8018b156edece0ea04774955c7e0d381d2d235) Thanks [@geekact](https://github.com/geekact)! - `store` 改为接收 `Caching` 实例（不再直接传 `CacheAdapter`）；请在组合根 `new Caching(adapter)` 后再传入。
+
 ## 0.3.0
 
 ### Minor Changes
