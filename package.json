@@ -7,6 +7,7 @@
   "license": "MIT",
   "type": "module",
   "scripts": {
+    "postinstall": "pnpm --filter @aomex-contrib/playwright-service exec playwright install chromium",
     "test": "vitest",
     "build": "node scripts/remove-dist.mjs && pnpm --recursive --workspace-concurrency 1 prepublishOnly",
     "prepare": "husky",

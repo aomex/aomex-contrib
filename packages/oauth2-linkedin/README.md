@@ -40,6 +40,7 @@ pnpm add @aomex-contrib/oauth2-linkedin @aomex/oauth2-client
 ## 4. 最小可跑通示例
 
 ```ts
+import { Caching } from '@aomex/cache';
 import { CacheMemoryAdapter } from '@aomex/cache/memory';
 import { LinkedInOAuth2Client } from '@aomex-contrib/oauth2-linkedin';
 
@@ -47,7 +48,7 @@ const linkedin = new LinkedInOAuth2Client({
   clientId: process.env.LINKEDIN_CLIENT_ID!,
   clientSecret: process.env.LINKEDIN_CLIENT_SECRET!,
   redirectUri: 'https://example.com/oauth/linkedin/callback',
-  store: new CacheMemoryAdapter(),
+  store: new Caching(new CacheMemoryAdapter()),
   // 默认 scopes: openid, profile, email
 });
 

@@ -32,7 +32,7 @@
 pnpm add @aomex-contrib/oauth2-wecom @aomex/oauth2-client
 ```
 
-生产多实例请用 Redis 等持久 `CacheAdapter`（见下文「store 怎么选」）。
+生产多实例请用 Redis 等共享 `Caching`（`new Caching(adapter)`）（见下文「store 怎么选」）。
 
 ---
 
@@ -88,10 +88,10 @@ WECOM_AGENT_ID=1000002
 1. **OAuth `state`**：防 CSRF，发起登录时写入，回调时校验后删除
 2. **应用 `access_token`**：`getAccessToken()` / 换身份内部都会用到，key 形如 `wecom:corp_token:${corpId}:${agentId}`
 
-| 环境     | 推荐                        | 说明                                  |
-| -------- | --------------------------- | ------------------------------------- |
-| 单机试玩 | `CacheMemoryAdapter`        | 进程重启丢失；多进程/多副本会各管各的 |
-| 生产     | Redis 等实现 `CacheAdapter` | 多实例共享 state 与应用 token         |
+| 环境     | 推荐                             | 说明                                  |
+| -------- | -------------------------------- | ------------------------------------- |
+| 单机试玩 | `Caching` + `CacheMemoryAdapter` | 进程重启丢失；多进程/多副本会各管各的 |
+| 生产     | Redis 等适配器 + `Caching`       | 多实例共享 state 与应用 token         |
 
 详见第 7 节：`getAccessToken` 是干什么的、和 `callback` 身份字段有何区别。
 
@@ -102,6 +102,7 @@ WECOM_AGENT_ID=1000002
 ### 5.1 创建客户端
 
 ```ts
+import { Caching } from '@aomex/cache';
 import { CacheMemoryAdapter } from '@aomex/cache/memory';
 import { WecomOAuth2Client } from '@aomex-contrib/oauth2-wecom';
 
@@ -111,7 +112,7 @@ const wecom = new WecomOAuth2Client({
   agentId: process.env.WECOM_AGENT_ID!,
   // 必须与后台可信域名一致，且为完整 https 回调 URL
   redirectUri: 'https://example.com/oauth/wecom/callback',
-  store: new CacheMemoryAdapter(),
+  store: new Caching(new CacheMemoryAdapter()),
   scopes: ['snsapi_base'], // 必填；静默，一般只拿 userid
   // scopes: ['snsapi_privateinfo'], // 需用户确认，可见范围内可返回 user_ticket
 });

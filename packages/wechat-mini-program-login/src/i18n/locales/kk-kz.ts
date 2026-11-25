@@ -5,7 +5,6 @@ import { zh } from './zh-cn';
 export default I18n.satisfies(zh).define({
   app_id_empty: 'appId бос болмауы керек',
   app_secret_empty: 'appSecret бос болмауы керек',
-  store_empty: 'store must not be empty',
   js_code_empty: 'jsCode бос болмауы керек',
   phone_code_empty: 'phoneCode must not be empty',
   code2session_failed: 'WeChat code2session сәтсіз аяқталды: {{errcode}} {{errmsg}}',

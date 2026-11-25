@@ -47,11 +47,14 @@ issuer: 'https://login.microsoftonline.com/common/v2.0';
 若应用是**单租户**，或必须限制为某一目录，请覆盖 `oidc.issuer`：
 
 ```ts
+import { Caching } from '@aomex/cache';
+import { CacheMemoryAdapter } from '@aomex/cache/memory';
+
 const ms = new MicrosoftOAuth2Client({
   clientId: process.env.MS_CLIENT_ID!,
   clientSecret: process.env.MS_CLIENT_SECRET!,
   redirectUri: 'https://example.com/oauth/microsoft/callback',
-  store: new CacheMemoryAdapter(),
+  store: new Caching(new CacheMemoryAdapter()),
   oidc: {
     // 把 {tenant} 换成你的租户 ID 或域名，例如 contoso.onmicrosoft.com
     issuer: 'https://login.microsoftonline.com/{tenant}/v2.0',
@@ -65,13 +68,14 @@ const ms = new MicrosoftOAuth2Client({
 
 ## 4. store
 
-保存 OAuth **`state`**（及基类可能用到的 PKCE 数据）。生产多实例请用 Redis 等共享 `CacheAdapter`。
+保存 OAuth **`state`**（及基类可能用到的 PKCE 数据）。生产多实例请用 Redis 等共享 `Caching`（`new Caching(adapter)`）。
 
 ---
 
 ## 5. 最小可跑通示例
 
 ```ts
+import { Caching } from '@aomex/cache';
 import { CacheMemoryAdapter } from '@aomex/cache/memory';
 import { MicrosoftOAuth2Client } from '@aomex-contrib/oauth2-microsoft';
 
@@ -79,7 +83,7 @@ const ms = new MicrosoftOAuth2Client({
   clientId: process.env.MS_CLIENT_ID!,
   clientSecret: process.env.MS_CLIENT_SECRET!,
   redirectUri: 'https://example.com/oauth/microsoft/callback',
-  store: new CacheMemoryAdapter(),
+  store: new Caching(new CacheMemoryAdapter()),
   // 默认 scopes: openid profile email offline_access
 });
 

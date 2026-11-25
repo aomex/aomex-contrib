@@ -1,3 +1,4 @@
+import { Caching } from '@aomex/cache';
 import { CacheMemoryAdapter } from '@aomex/cache/memory';
 import { expectType, type TypeEqual } from 'ts-expect';
 import {
@@ -11,7 +12,7 @@ const mpUserinfo = new WechatMpOAuth2Client({
   appId: 'wx',
   appSecret: 'sec',
   redirectUri: 'https://example.com/cb',
-  store: new CacheMemoryAdapter(),
+  store: new Caching(new CacheMemoryAdapter()),
   scopes: ['snsapi_userinfo'],
 });
 type MpUserinfoProfile = Awaited<ReturnType<typeof mpUserinfo.callback>>;
@@ -22,7 +23,7 @@ const mpBase = new WechatMpOAuth2Client({
   appId: 'wx',
   appSecret: 'sec',
   redirectUri: 'https://example.com/cb',
-  store: new CacheMemoryAdapter(),
+  store: new Caching(new CacheMemoryAdapter()),
   scopes: ['snsapi_base'],
 });
 type MpBaseProfile = Awaited<ReturnType<typeof mpBase.callback>>;
@@ -32,7 +33,7 @@ const open = new WechatOpenOAuth2Client({
   appId: 'wx',
   appSecret: 'sec',
   redirectUri: 'https://example.com/cb',
-  store: new CacheMemoryAdapter(),
+  store: new Caching(new CacheMemoryAdapter()),
   scopes: ['snsapi_login'],
 });
 type OpenProfile = Awaited<ReturnType<typeof open.callback>>;
@@ -42,7 +43,7 @@ new WechatOpenOAuth2Client({
   appId: 'wx',
   appSecret: 'sec',
   redirectUri: 'https://example.com/cb',
-  store: new CacheMemoryAdapter(),
+  store: new Caching(new CacheMemoryAdapter()),
   scopes: ['snsapi_login'],
   onProfile({ token, userinfo }) {
     expectType<TypeEqual<WechatTokenSet, typeof token>>(true);
@@ -58,7 +59,7 @@ new WechatMpOAuth2Client({
   appId: 'wx',
   appSecret: 'sec',
   redirectUri: 'https://example.com/cb',
-  store: new CacheMemoryAdapter(),
+  store: new Caching(new CacheMemoryAdapter()),
   scopes: ['snsapi_base'],
   onProfile({ token, userinfo }) {
     expectType<TypeEqual<WechatSnsUserInfo | null, typeof userinfo>>(true);
@@ -70,7 +71,7 @@ new WechatMpOAuth2Client({
   appId: 'wx',
   appSecret: 'sec',
   redirectUri: 'https://example.com/cb',
-  store: new CacheMemoryAdapter(),
+  store: new Caching(new CacheMemoryAdapter()),
   // @ts-expect-error 公众号 scope 仅 snsapi_base / snsapi_userinfo
   scopes: ['snsapi_login'],
   onProfile: async () => '',
@@ -80,7 +81,7 @@ new WechatOpenOAuth2Client({
   appId: 'wx',
   appSecret: 'sec',
   redirectUri: 'https://example.com/cb',
-  store: new CacheMemoryAdapter(),
+  store: new Caching(new CacheMemoryAdapter()),
   scopes: ['snsapi_login'],
   // @ts-expect-error 开放平台不用 clientId，应传 appId
   clientId: 'wx',

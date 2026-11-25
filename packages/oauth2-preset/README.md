@@ -83,7 +83,7 @@ export class MyOidcClient extends OAuth2Client {
     clientId: string;
     clientSecret: string;
     redirectUri: string;
-    store: import('@aomex/cache').CacheAdapter;
+    store: import('@aomex/cache').Caching;
     // 可覆盖 oidc / scopes …
   }) {
     super(mergeOidcPreset(myOidc, opts) as OAuth2Client.OidcWithoutOnProfileOptions);

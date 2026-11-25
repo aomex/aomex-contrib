@@ -91,7 +91,7 @@ export class WecomOAuth2Client<
   override async getAuthorizationUrl(ctx: WebContext): Promise<string> {
     const { authorizationEndpoint } = await this.resolveEndpoints();
     const state = this.randomToken();
-    await this.caching.set(this.stateKey(state), { verifier: '' }, this.stateTtlMs);
+    await this.cache.set(this.stateKey(state), { verifier: '' }, this.stateTtlMs);
 
     const redirectUri = this.resolveRedirectUri(ctx);
     const url = new URL(authorizationEndpoint);
@@ -127,13 +127,13 @@ export class WecomOAuth2Client<
    * @see https://developer.work.weixin.qq.com/document/path/91039
    */
   async getAccessToken(): Promise<string> {
-    const cached = await this.caching.get<CorpTokenCache>(this.corpTokenKey);
+    const cached = await this.cache.get<CorpTokenCache>(this.corpTokenKey);
     if (cached?.access_token) {
       return cached.access_token;
     }
 
-    return this.caching.singleFlight(this.corpTokenKey, async () => {
-      const again = await this.caching.get<CorpTokenCache>(this.corpTokenKey);
+    return this.cache.singleFlight(this.corpTokenKey, async () => {
+      const again = await this.cache.get<CorpTokenCache>(this.corpTokenKey);
       if (again?.access_token) {
         return again.access_token;
       }
@@ -159,7 +159,7 @@ export class WecomOAuth2Client<
           ? json['expires_in']
           : 7200;
       const ttlSec = Math.max(60, expiresIn - CORP_TOKEN_SKEW_SEC);
-      await this.caching.set(
+      await this.cache.set(
         this.corpTokenKey,
         { access_token: json['access_token'] } satisfies CorpTokenCache,
         ttlSec * 1000,
@@ -171,7 +171,7 @@ export class WecomOAuth2Client<
 
   /** 删除本应用本地缓存的企业 `access_token`（不会调用企微作废接口） */
   async deleteAccessToken(): Promise<void> {
-    await this.caching.delete(this.corpTokenKey);
+    await this.cache.delete(this.corpTokenKey);
   }
 
   /**

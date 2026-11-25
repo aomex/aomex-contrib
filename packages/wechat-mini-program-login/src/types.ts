@@ -1,4 +1,4 @@
-import type { CacheAdapter } from '@aomex/cache';
+import type { Caching } from '@aomex/cache';
 
 export type WechatMiniProgramLoginOptions = {
   /** 小程序 AppID */
@@ -6,11 +6,12 @@ export type WechatMiniProgramLoginOptions = {
   /** 小程序 AppSecret */
   appSecret: string;
   /**
-   * 缓存适配器，用于缓存小程序全局 `access_token`
+   * 缓存实例，用于缓存小程序全局 `access_token`
    *（`getAccessToken` / `getPhoneNumber` 依赖）。
-   * 首次读写 token 缓存时经 `registerLifecycle` 调用 `connect`，关停时 `disconnect`
+   * 组合根应 `const cache = new Caching(adapter)` 再传入；
+   * 首次读写由 `Caching` 懒 `connect`，关停时 `disconnect`
    */
-  store: CacheAdapter;
+  store: Caching;
 };
 
 /**

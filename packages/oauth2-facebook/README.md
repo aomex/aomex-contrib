@@ -40,6 +40,7 @@ pnpm add @aomex-contrib/oauth2-facebook @aomex/oauth2-client
 ## 4. 最小可跑通示例
 
 ```ts
+import { Caching } from '@aomex/cache';
 import { CacheMemoryAdapter } from '@aomex/cache/memory';
 import { FacebookOAuth2Client } from '@aomex-contrib/oauth2-facebook';
 
@@ -47,7 +48,7 @@ const facebook = new FacebookOAuth2Client({
   clientId: process.env.FB_APP_ID!,
   clientSecret: process.env.FB_APP_SECRET!,
   redirectUri: 'https://example.com/oauth/facebook/callback',
-  store: new CacheMemoryAdapter(),
+  store: new Caching(new CacheMemoryAdapter()),
   // 默认 scopes: email, public_profile
 });
 

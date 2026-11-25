@@ -37,16 +37,17 @@ pnpm add @aomex-contrib/oauth2-google @aomex/oauth2-client
 
 用于保存 OAuth / OIDC **`state`（及 PKCE 相关数据，若基类启用）**。
 
-| 环境       | 推荐                    |
-| ---------- | ----------------------- |
-| 单机试玩   | `CacheMemoryAdapter`    |
-| 生产多实例 | Redis 等 `CacheAdapter` |
+| 环境       | 推荐                             |
+| ---------- | -------------------------------- |
+| 单机试玩   | `Caching` + `CacheMemoryAdapter` |
+| 生产多实例 | Redis 等适配器 + `Caching`       |
 
 ---
 
 ## 4. 最小可跑通示例
 
 ```ts
+import { Caching } from '@aomex/cache';
 import { CacheMemoryAdapter } from '@aomex/cache/memory';
 import { GoogleOAuth2Client } from '@aomex-contrib/oauth2-google';
 
@@ -54,7 +55,7 @@ const google = new GoogleOAuth2Client({
   clientId: process.env.GOOGLE_CLIENT_ID!,
   clientSecret: process.env.GOOGLE_CLIENT_SECRET!,
   redirectUri: 'https://example.com/oauth/google/callback',
-  store: new CacheMemoryAdapter(),
+  store: new Caching(new CacheMemoryAdapter()),
   // 默认 scopes: openid email profile
 });
 

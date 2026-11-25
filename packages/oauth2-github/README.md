@@ -34,13 +34,14 @@ pnpm add @aomex-contrib/oauth2-github @aomex/oauth2-client
 
 ## 3. store
 
-保存 OAuth `state`。生产多实例用 Redis 等共享 `CacheAdapter`；单机可用 `CacheMemoryAdapter`。
+保存 OAuth `state`。生产多实例用 Redis 等共享 `Caching`（`new Caching(adapter)`）；单机可用 `new Caching(new CacheMemoryAdapter())`。
 
 ---
 
 ## 4. 最小可跑通示例
 
 ```ts
+import { Caching } from '@aomex/cache';
 import { CacheMemoryAdapter } from '@aomex/cache/memory';
 import { GitHubOAuth2Client } from '@aomex-contrib/oauth2-github';
 
@@ -48,7 +49,7 @@ const github = new GitHubOAuth2Client({
   clientId: process.env.GITHUB_CLIENT_ID!,
   clientSecret: process.env.GITHUB_CLIENT_SECRET!,
   redirectUri: 'https://example.com/oauth/github/callback',
-  store: new CacheMemoryAdapter(),
+  store: new Caching(new CacheMemoryAdapter()),
   // 默认 scopes: read:user, user:email
 });
 

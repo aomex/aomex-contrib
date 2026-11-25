@@ -61,6 +61,7 @@ wx.login({
 服务端：
 
 ```ts
+import { Caching } from '@aomex/cache';
 import { CacheMemoryAdapter } from '@aomex/cache/memory';
 import { WechatMiniProgramLoginClient } from '@aomex-contrib/wechat-mini-program-login';
 
@@ -69,7 +70,7 @@ const mini = new WechatMiniProgramLoginClient({
   appSecret: process.env.WX_MINI_APP_SECRET!,
   // 生产建议 Redis 等，多实例共享 access_token；
   // 首次读写 token 缓存时 registerLifecycle(connect)，关停时 disconnect
-  store: new CacheMemoryAdapter(),
+  store: new Caching(new CacheMemoryAdapter()),
 });
 
 const session = await mini.code2Session(code);

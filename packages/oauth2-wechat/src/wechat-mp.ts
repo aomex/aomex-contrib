@@ -62,13 +62,13 @@ export class WechatMpOAuth2Client<
    * @see https://developers.weixin.qq.com/doc/offiaccount/Basic_Information/Get_access_token.html
    */
   async getAccessToken(): Promise<string> {
-    const cached = await this.caching.get<MpAccessTokenCache>(this.mpTokenKey);
+    const cached = await this.cache.get<MpAccessTokenCache>(this.mpTokenKey);
     if (cached?.access_token) {
       return cached.access_token;
     }
 
-    return this.caching.singleFlight(this.mpTokenKey, async () => {
-      const again = await this.caching.get<MpAccessTokenCache>(this.mpTokenKey);
+    return this.cache.singleFlight(this.mpTokenKey, async () => {
+      const again = await this.cache.get<MpAccessTokenCache>(this.mpTokenKey);
       if (again?.access_token) {
         return again.access_token;
       }
@@ -95,7 +95,7 @@ export class WechatMpOAuth2Client<
           ? json['expires_in']
           : 7200;
       const ttlSec = Math.max(60, expiresIn - TOKEN_SKEW_SEC);
-      await this.caching.set(
+      await this.cache.set(
         this.mpTokenKey,
         { access_token: json['access_token'] } satisfies MpAccessTokenCache,
         ttlSec * 1000,
@@ -107,7 +107,7 @@ export class WechatMpOAuth2Client<
 
   /** 删除本应用本地缓存的公众号全局 `access_token`（不会调用微信作废接口） */
   async deleteAccessToken(): Promise<void> {
-    await this.caching.delete(this.mpTokenKey);
+    await this.cache.delete(this.mpTokenKey);
   }
 
   /**

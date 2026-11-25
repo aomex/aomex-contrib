@@ -1,3 +1,4 @@
+import { Caching } from '@aomex/cache';
 import { CacheMemoryAdapter } from '@aomex/cache/memory';
 import { afterEach, expect, test, vi } from 'vitest';
 import {
@@ -36,7 +37,7 @@ function stubJsonFetch(handler: (url: URL) => unknown) {
 }
 
 test('构造：空 appId / appSecret 抛错', () => {
-  const store = new CacheMemoryAdapter();
+  const store = new Caching(new CacheMemoryAdapter());
   const base = {
     redirectUri: 'https://example.com/cb',
     store,
@@ -65,7 +66,7 @@ test('构造：空 appId / appSecret 抛错', () => {
 });
 
 test('开放平台：授权 URL 用 appid、snsapi_login、#wechat_redirect', async () => {
-  const store = new CacheMemoryAdapter();
+  const store = new Caching(new CacheMemoryAdapter());
   const client = new WechatOpenOAuth2Client({
     scopes: ['snsapi_login'],
     appId: 'wx_open',
@@ -97,7 +98,7 @@ test('开放平台：授权 URL 用 appid、snsapi_login、#wechat_redirect', as
 });
 
 test('公众号：scopes 控制 snsapi_userinfo / snsapi_base', async () => {
-  const store = new CacheMemoryAdapter();
+  const store = new Caching(new CacheMemoryAdapter());
   const userinfo = new WechatMpOAuth2Client({
     scopes: ['snsapi_userinfo'],
     appId: 'wx_mp',
@@ -128,7 +129,7 @@ test('公众号：scopes 控制 snsapi_userinfo / snsapi_base', async () => {
 });
 
 test('callback：默认自动拉 /sns/userinfo', async () => {
-  const store = new CacheMemoryAdapter();
+  const store = new Caching(new CacheMemoryAdapter());
   const client = new WechatOpenOAuth2Client({
     scopes: ['snsapi_login'],
     appId: 'wx_open',
@@ -197,7 +198,7 @@ test('callback：默认自动拉 /sns/userinfo', async () => {
 });
 
 test('callback：snsapi_base 不拉 userinfo，返回令牌', async () => {
-  const store = new CacheMemoryAdapter();
+  const store = new Caching(new CacheMemoryAdapter());
   const client = new WechatMpOAuth2Client({
     appId: 'wx_mp',
     appSecret: 'sec',
@@ -235,7 +236,7 @@ test('callback：snsapi_base 不拉 userinfo，返回令牌', async () => {
 });
 
 test('callback：换票省略 scope 时仍按配置 scopes 拉 userinfo', async () => {
-  const store = new CacheMemoryAdapter();
+  const store = new Caching(new CacheMemoryAdapter());
   const client = new WechatMpOAuth2Client({
     scopes: ['snsapi_userinfo'],
     appId: 'wx_mp',
@@ -279,7 +280,7 @@ test('callback：换票省略 scope 时仍按配置 scopes 拉 userinfo', async 
 });
 
 test('换票失败：errcode 非 0', async () => {
-  const store = new CacheMemoryAdapter();
+  const store = new Caching(new CacheMemoryAdapter());
   const client = new WechatMpOAuth2Client({
     scopes: ['snsapi_userinfo'],
     appId: 'wx_mp',
@@ -306,7 +307,7 @@ test('refresh：GET refresh_token', async () => {
     appId: 'wx_open',
     appSecret: 'sec',
     redirectUri: 'https://example.com/cb',
-    store: new CacheMemoryAdapter(),
+    store: new Caching(new CacheMemoryAdapter()),
     scopes: ['snsapi_login'],
     onProfile: async ({ token }) => token.openid,
   });
@@ -340,7 +341,7 @@ test('refresh：GET refresh_token', async () => {
 });
 
 test('换票解析 is_snapshotuser（公众号快照页）', async () => {
-  const store = new CacheMemoryAdapter();
+  const store = new Caching(new CacheMemoryAdapter());
   const client = new WechatMpOAuth2Client({
     scopes: ['snsapi_userinfo'],
     appId: 'wx_mp',
@@ -380,7 +381,7 @@ test('refresh：空 token / revoke 不支持', async () => {
     appId: 'wx_open',
     appSecret: 'sec',
     redirectUri: 'https://example.com/cb',
-    store: new CacheMemoryAdapter(),
+    store: new Caching(new CacheMemoryAdapter()),
     scopes: ['snsapi_login'],
     onProfile: async ({ token }) => token.openid,
   });
@@ -390,7 +391,7 @@ test('refresh：空 token / revoke 不支持', async () => {
 });
 
 test('换票缺 access_token/openid', async () => {
-  const store = new CacheMemoryAdapter();
+  const store = new Caching(new CacheMemoryAdapter());
   const client = new WechatOpenOAuth2Client({
     scopes: ['snsapi_login'],
     appId: 'wx_open',
@@ -413,7 +414,7 @@ test('authorizationParams 可附加在 state 后；忽略覆盖必填字段', as
     appId: 'wx_mp',
     appSecret: 'sec',
     redirectUri: 'https://example.com/cb',
-    store: new CacheMemoryAdapter(),
+    store: new Caching(new CacheMemoryAdapter()),
     scopes: ['snsapi_userinfo'],
     authorizationParams: {
       forcePopup: 'true',
@@ -443,7 +444,7 @@ test('scopes 为空数组时不带 scope；redirectUri 可为函数', async () =
     appId: 'wx_open',
     appSecret: 'sec',
     redirectUri: () => 'https://example.com/dyn',
-    store: new CacheMemoryAdapter(),
+    store: new Caching(new CacheMemoryAdapter()),
     scopes: [],
     onProfile: async ({ token }) => token.openid,
   });
@@ -454,7 +455,7 @@ test('scopes 为空数组时不带 scope；redirectUri 可为函数', async () =
 });
 
 test('换票仅必填字段；errcode=0；errcode 无 errmsg', async () => {
-  const store = new CacheMemoryAdapter();
+  const store = new Caching(new CacheMemoryAdapter());
   const client = new WechatOpenOAuth2Client({
     scopes: ['snsapi_login'],
     appId: 'wx_open',
@@ -494,7 +495,7 @@ test('refresh 失败 errcode', async () => {
     appId: 'wx_open',
     appSecret: 'sec',
     redirectUri: 'https://example.com/cb',
-    store: new CacheMemoryAdapter(),
+    store: new Caching(new CacheMemoryAdapter()),
     scopes: ['snsapi_login'],
     onProfile: async ({ token }) => token.openid,
   });
@@ -513,7 +514,7 @@ test('withAccessToken：assertOk 遇 40001 清缓存后重试', async () => {
     appId: 'wx_mp',
     appSecret: 'sec',
     redirectUri: 'https://example.com/cb',
-    store: new CacheMemoryAdapter(),
+    store: new Caching(new CacheMemoryAdapter()),
     scopes: ['snsapi_base'],
   });
 
@@ -550,7 +551,7 @@ test('getAccessToken：拉取并缓存；delete 后重取', async () => {
     appId: 'wx_mp',
     appSecret: 'sec',
     redirectUri: 'https://example.com/cb',
-    store: new CacheMemoryAdapter(),
+    store: new Caching(new CacheMemoryAdapter()),
     scopes: ['snsapi_base'],
   });
 
@@ -588,7 +589,7 @@ test('getAccessToken：并发只向微信换一次票', async () => {
     appId: 'wx_mp',
     appSecret: 'sec',
     redirectUri: 'https://example.com/cb',
-    store: new CacheMemoryAdapter(),
+    store: new Caching(new CacheMemoryAdapter()),
     scopes: ['snsapi_base'],
   });
 
@@ -622,7 +623,7 @@ test('getAccessToken：errcode 抛错', async () => {
     appId: 'wx_mp',
     appSecret: 'sec',
     redirectUri: 'https://example.com/cb',
-    store: new CacheMemoryAdapter(),
+    store: new Caching(new CacheMemoryAdapter()),
     scopes: ['snsapi_base'],
   });
 

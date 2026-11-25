@@ -1,6 +1,5 @@
-import type { CacheAdapter } from '@aomex/cache';
-import { Caching } from '@aomex/cache';
-import { registerLifecycle, rule, validate } from '@aomex/common';
+import type { Caching } from '@aomex/cache';
+import { rule, validate } from '@aomex/common';
 import { HttpError } from '@aomex/web';
 import { i18n } from './i18n';
 import type {
@@ -32,17 +31,15 @@ type AccessTokenCache = {
 /**
  * 微信小程序 / 小游戏登录与身份相关能力（**不是 OAuth2**）。
  * - `code2Session`：`wx.login` 的 code → openid / session_key
- * - `getAccessToken`：全局接口调用凭证（经 `store` 缓存）
+ * - `getAccessToken`：全局接口调用凭证（经 `cache` 缓存）
  * - `getPhoneNumber`：新版手机号 code → 手机号（内部用 access_token）
  * @see https://developers.weixin.qq.com/miniprogram/dev/server/API/user-login/api_code2session.html
  */
 export class WechatMiniProgramLoginClient {
   protected readonly appId: string;
   protected readonly appSecret: string;
-  protected readonly store: CacheAdapter;
-  protected readonly caching: Caching;
+  protected readonly cache: Caching;
   protected readonly tokenCacheKey: string;
-  protected readyPromise?: Promise<void>;
 
   constructor(opts: WechatMiniProgramLoginOptions) {
     if (!opts.appId) {
@@ -51,25 +48,10 @@ export class WechatMiniProgramLoginClient {
     if (!opts.appSecret) {
       throw new Error(i18n.t('app_secret_empty'));
     }
-    if (!opts.store) {
-      throw new Error(i18n.t('store_empty'));
-    }
     this.appId = opts.appId;
     this.appSecret = opts.appSecret;
-    this.store = opts.store;
-    this.caching = new Caching(opts.store);
+    this.cache = opts.store;
     this.tokenCacheKey = `wxmini:access_token:${opts.appId}`;
-  }
-
-  /**
-   * 确保 store 已 `connect`（可重入）。首次读写 `access_token` 缓存时登记生命周期。
-   */
-  protected ensureReady(): Promise<void> {
-    this.readyPromise ??= registerLifecycle({
-      onInit: () => this.store.connect(),
-      onDestroy: () => this.store.disconnect(),
-    });
-    return this.readyPromise;
   }
 
   /**
@@ -98,19 +80,18 @@ export class WechatMiniProgramLoginClient {
   }
 
   /**
-   * 获取小程序全局 `access_token`（经构造时的 `store` 缓存）。
+   * 获取小程序全局 `access_token`（经构造时的 `cache` 缓存）。
    * TTL 为 `max(60, expires_in - 300)` 秒（微信默认 expires_in=7200 → 约 6900 秒）。
    * 未命中时用 `singleFlight`，避免并发多次向微信换票（新票会使旧票失效）。
    */
   async getAccessToken(): Promise<string> {
-    await this.ensureReady();
-    const cached = await this.caching.get<AccessTokenCache>(this.tokenCacheKey);
+    const cached = await this.cache.get<AccessTokenCache>(this.tokenCacheKey);
     if (cached?.access_token) {
       return cached.access_token;
     }
 
-    return this.caching.singleFlight(this.tokenCacheKey, async () => {
-      const again = await this.caching.get<AccessTokenCache>(this.tokenCacheKey);
+    return this.cache.singleFlight(this.tokenCacheKey, async () => {
+      const again = await this.cache.get<AccessTokenCache>(this.tokenCacheKey);
       if (again?.access_token) {
         return again.access_token;
       }
@@ -130,7 +111,7 @@ export class WechatMiniProgramLoginClient {
 
       const expiresIn = expires_in ?? 7200;
       const ttlSec = Math.max(60, expiresIn - TOKEN_SKEW_SEC);
-      await this.caching.set(
+      await this.cache.set(
         this.tokenCacheKey,
         { access_token } satisfies AccessTokenCache,
         ttlSec * 1000,
@@ -142,8 +123,7 @@ export class WechatMiniProgramLoginClient {
 
   /** 删除本应用本地缓存的 `access_token`（不会调用微信作废接口） */
   async deleteAccessToken(): Promise<void> {
-    await this.ensureReady();
-    await this.caching.delete(this.tokenCacheKey);
+    await this.cache.delete(this.tokenCacheKey);
   }
 
   /**

@@ -43,6 +43,7 @@ pnpm add @aomex-contrib/oauth2-twitter @aomex/oauth2-client
 ## 4. 最小可跑通示例
 
 ```ts
+import { Caching } from '@aomex/cache';
 import { CacheMemoryAdapter } from '@aomex/cache/memory';
 import { TwitterOAuth2Client } from '@aomex-contrib/oauth2-twitter';
 
@@ -50,7 +51,7 @@ const twitter = new TwitterOAuth2Client({
   clientId: process.env.TWITTER_CLIENT_ID!,
   clientSecret: process.env.TWITTER_CLIENT_SECRET!,
   redirectUri: 'https://example.com/oauth/twitter/callback',
-  store: new CacheMemoryAdapter(),
+  store: new Caching(new CacheMemoryAdapter()),
   // 默认 scopes: tweet.read, users.read, offline.access
 });
 

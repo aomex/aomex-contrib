@@ -56,10 +56,10 @@ pnpm add @aomex-contrib/oauth2-wechat @aomex/oauth2-client
 1. OAuth **`state`（防 CSRF）**——`WechatOpenOAuth2Client` / `WechatMpOAuth2Client` 都需要
 2. 公众号全局 `cgi-bin/token`——仅 `WechatMpOAuth2Client#getAccessToken` 会写入（见第 8 节）
 
-| 环境     | 推荐                    | 说明                     |
-| -------- | ----------------------- | ------------------------ |
-| 单机试玩 | `CacheMemoryAdapter`    | 重启丢失；多副本各管各的 |
-| 生产     | Redis 等 `CacheAdapter` | 多实例必须共享           |
+| 环境     | 推荐                             | 说明                     |
+| -------- | -------------------------------- | ------------------------ |
+| 单机试玩 | `Caching` + `CacheMemoryAdapter` | 重启丢失；多副本各管各的 |
+| 生产     | Redis 等适配器 + `Caching`       | 多实例必须共享           |
 
 网页授权换票得到的 SNS `access_token` 在 `callback` 结果里（用户级、每次登录一份）；**不会**进 `store`。全局票才走 `getAccessToken` + `store`。
 
@@ -79,6 +79,7 @@ pnpm add @aomex-contrib/oauth2-wechat @aomex/oauth2-client
 ### 4.2 代码
 
 ```ts
+import { Caching } from '@aomex/cache';
 import { CacheMemoryAdapter } from '@aomex/cache/memory';
 import { WechatOpenOAuth2Client } from '@aomex-contrib/oauth2-wechat';
 
@@ -86,7 +87,7 @@ const client = new WechatOpenOAuth2Client({
   appId: process.env.WX_OPEN_APP_ID!,
   appSecret: process.env.WX_OPEN_APP_SECRET!,
   redirectUri: 'https://example.com/oauth/wechat/callback',
-  store: new CacheMemoryAdapter(),
+  store: new Caching(new CacheMemoryAdapter()),
   scopes: ['snsapi_login'], // 必填；字面量可收窄 callback 的 userinfo 类型
 });
 
@@ -130,6 +131,7 @@ router.get('/oauth/wechat/callback', {
 ### 5.2 代码
 
 ```ts
+import { Caching } from '@aomex/cache';
 import { CacheMemoryAdapter } from '@aomex/cache/memory';
 import { WechatMpOAuth2Client } from '@aomex-contrib/oauth2-wechat';
 
@@ -137,7 +139,7 @@ const mp = new WechatMpOAuth2Client({
   appId: process.env.WX_MP_APP_ID!,
   appSecret: process.env.WX_MP_APP_SECRET!,
   redirectUri: 'https://example.com/oauth/mp/callback',
-  store: new CacheMemoryAdapter(),
+  store: new Caching(new CacheMemoryAdapter()),
   scopes: ['snsapi_userinfo'], // 必填；改成 ['snsapi_base'] 则 userinfo 类型为 null
   // authorizationParams: { forcePopup: 'true' }, // 需要时按微信文档追加
 });

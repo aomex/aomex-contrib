@@ -40,6 +40,7 @@ pnpm add @aomex-contrib/oauth2-gitlab @aomex/oauth2-client
 ## 4. 最小可跑通示例（GitLab.com）
 
 ```ts
+import { Caching } from '@aomex/cache';
 import { CacheMemoryAdapter } from '@aomex/cache/memory';
 import { GitLabOAuth2Client } from '@aomex-contrib/oauth2-gitlab';
 
@@ -47,7 +48,7 @@ const gitlab = new GitLabOAuth2Client({
   clientId: process.env.GITLAB_CLIENT_ID!,
   clientSecret: process.env.GITLAB_CLIENT_SECRET!,
   redirectUri: 'https://example.com/oauth/gitlab/callback',
-  store: new CacheMemoryAdapter(),
+  store: new Caching(new CacheMemoryAdapter()),
   // 默认 scopes: read_user
 });
 
@@ -77,7 +78,7 @@ const gitlab = new GitLabOAuth2Client({
   clientId: process.env.GITLAB_CLIENT_ID!,
   clientSecret: process.env.GITLAB_CLIENT_SECRET!,
   redirectUri: 'https://example.com/oauth/gitlab/callback',
-  store: new CacheMemoryAdapter(),
+  store: new Caching(new CacheMemoryAdapter()),
   authorizationEndpoint: 'https://gitlab.example.com/oauth/authorize',
   tokenEndpoint: 'https://gitlab.example.com/oauth/token',
   // 可选：revocationEndpoint: 'https://gitlab.example.com/oauth/revoke',

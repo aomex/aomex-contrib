@@ -1,3 +1,4 @@
+import { Caching } from '@aomex/cache';
 import { CacheMemoryAdapter } from '@aomex/cache/memory';
 import { expectType, type TypeEqual } from 'ts-expect';
 import {
@@ -15,7 +16,7 @@ const defaultClient = new AppleOAuth2Client({
   keyId: 'kid',
   privateKey: pem,
   redirectUri: 'https://example.com/cb',
-  store: new CacheMemoryAdapter(),
+  store: new Caching(new CacheMemoryAdapter()),
 });
 declare const defaultProfile: Awaited<ReturnType<typeof defaultClient.callback>>;
 expectType<TypeEqual<AppleProfile, typeof defaultProfile>>(true);
@@ -28,7 +29,7 @@ new AppleOAuth2Client({
   keyId: 'kid',
   privateKey: pem,
   redirectUri: 'https://example.com/cb',
-  store: new CacheMemoryAdapter(),
+  store: new Caching(new CacheMemoryAdapter()),
   onProfile({ oidc, user }) {
     expectType<TypeEqual<AppleIdTokenClaims, typeof oidc.claims>>(true);
     expectType<
@@ -48,7 +49,7 @@ new AppleOAuth2Client({
   keyId: 'kid',
   privateKey: pem,
   redirectUri: 'https://example.com/cb',
-  store: new CacheMemoryAdapter(),
+  store: new Caching(new CacheMemoryAdapter()),
   // @ts-expect-error Apple 不使用静态 clientSecret
   clientSecret: 'static',
   onProfile: async () => ({}),

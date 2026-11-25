@@ -74,6 +74,7 @@ Apple 默认把 `code` / `state` / `user`（仅首次可能有）POST 到你的 
 
 ```ts
 import { readFileSync } from 'node:fs';
+import { Caching } from '@aomex/cache';
 import { CacheMemoryAdapter } from '@aomex/cache/memory';
 import { AppleOAuth2Client } from '@aomex-contrib/oauth2-apple';
 
@@ -84,7 +85,7 @@ const apple = new AppleOAuth2Client({
   privateKey: readFileSync(process.env.APPLE_PRIVATE_KEY_PATH!, 'utf8'),
   // 也可传入已 importPKCS8 的密钥对象
   redirectUri: 'https://example.com/oauth/apple/callback',
-  store: new CacheMemoryAdapter(),
+  store: new Caching(new CacheMemoryAdapter()),
   // 默认 scopes: openid email name
   // clientSecretExpiresIn 默认约 6 个月（Apple 上限附近）
 });

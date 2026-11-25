@@ -40,6 +40,7 @@ pnpm add @aomex-contrib/oauth2-spotify @aomex/oauth2-client
 ## 4. 最小可跑通示例
 
 ```ts
+import { Caching } from '@aomex/cache';
 import { CacheMemoryAdapter } from '@aomex/cache/memory';
 import { SpotifyOAuth2Client } from '@aomex-contrib/oauth2-spotify';
 
@@ -47,7 +48,7 @@ const spotify = new SpotifyOAuth2Client({
   clientId: process.env.SPOTIFY_CLIENT_ID!,
   clientSecret: process.env.SPOTIFY_CLIENT_SECRET!,
   redirectUri: 'https://example.com/oauth/spotify/callback',
-  store: new CacheMemoryAdapter(),
+  store: new Caching(new CacheMemoryAdapter()),
   // 默认 scopes: user-read-email
   // scopes: ['user-read-email', 'user-library-read'],
 });

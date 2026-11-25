@@ -23,4 +23,7 @@ jobs:
           cache: true
           install: false
       - run: pnpm install
+      - name: Install Playwright Linux dependencies
+        if: runner.os == 'Linux'
+        run: pnpm --filter @aomex-contrib/playwright-service exec playwright install-deps chromium
       - run: pnpm test

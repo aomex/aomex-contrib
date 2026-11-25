@@ -1,3 +1,4 @@
+import { Caching } from '@aomex/cache';
 import { CacheMemoryAdapter } from '@aomex/cache/memory';
 import { internalDestroyServices } from '@aomex/common';
 import { HttpError } from '@aomex/web';
@@ -11,7 +12,7 @@ afterEach(async () => {
   await internalDestroyServices([]);
 });
 
-function createClient(store = new CacheMemoryAdapter()) {
+function createClient(store = new Caching(new CacheMemoryAdapter())) {
   return new WechatMiniProgramLoginClient({
     appId: 'wx_mini',
     appSecret: 'sec',
@@ -47,7 +48,7 @@ test('首次用到 store 时才登记生命周期：connect / disconnect', async
     }
   }
 
-  const client = createClient(new TrackingAdapter());
+  const client = createClient(new Caching(new TrackingAdapter()));
   expect(order).toEqual([]);
 
   stubFetch(() => ({
@@ -63,8 +64,8 @@ test('首次用到 store 时才登记生命周期：connect / disconnect', async
   expect(order).toEqual(['init', 'destroy']);
 });
 
-test('构造：空 appId / appSecret / store 抛错', () => {
-  const store = new CacheMemoryAdapter();
+test('构造：空 appId / appSecret 抛错', () => {
+  const store = new Caching(new CacheMemoryAdapter());
   expect(
     () =>
       new WechatMiniProgramLoginClient({
@@ -82,15 +83,6 @@ test('构造：空 appId / appSecret / store 抛错', () => {
         store,
       }),
   ).toThrow(i18n.t('app_secret_empty'));
-
-  expect(
-    () =>
-      new WechatMiniProgramLoginClient({
-        appId: 'wx',
-        appSecret: 'secret',
-        store: undefined as never,
-      }),
-  ).toThrow(i18n.t('store_empty'));
 });
 
 test('code2Session', async () => {

@@ -1,4 +1,4 @@
-import type { CacheAdapter } from '@aomex/cache';
+import type { Caching } from '@aomex/cache';
 import type { DurationInput } from '@aomex/common';
 import type { OAuth2Client } from '@aomex/oauth2-client';
 import type { WebContext } from '@aomex/web';
@@ -127,7 +127,7 @@ type WechatCommonOptions<Profile = WechatProfile> = {
   /** 对应微信 AppSecret */
   appSecret: string;
   redirectUri: string | ((ctx: WebContext) => string);
-  store: CacheAdapter;
+  store: Caching;
   stateTtl?: DurationInput;
   authorizationParams?: Record<string, string>;
   /**

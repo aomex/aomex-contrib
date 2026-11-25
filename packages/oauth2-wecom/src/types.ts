@@ -1,4 +1,4 @@
-import type { CacheAdapter } from '@aomex/cache';
+import type { Caching } from '@aomex/cache';
 import type { DurationInput } from '@aomex/common';
 import type { WebContext } from '@aomex/web';
 
@@ -44,7 +44,7 @@ export type WecomOAuth2Options<
   /** 应用 AgentId */
   agentId: string | number;
   redirectUri: string | ((ctx: WebContext) => string);
-  store: CacheAdapter;
+  store: Caching;
   stateTtl?: DurationInput;
   /**
    * 必填。`['snsapi_base']` 静默；`['snsapi_privateinfo']` 可拿敏感信息（须带 agentId）

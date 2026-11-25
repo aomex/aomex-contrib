@@ -1,3 +1,4 @@
+import { Caching } from '@aomex/cache';
 import { CacheMemoryAdapter } from '@aomex/cache/memory';
 import { exportPKCS8, generateKeyPair } from 'jose';
 import { expect, test } from 'vitest';
@@ -9,7 +10,7 @@ test('构造：缺 teamId / keyId / privateKey 抛错', async () => {
     extractable: true,
   });
   const pem = await exportPKCS8(privateKey);
-  const store = new CacheMemoryAdapter();
+  const store = new Caching(new CacheMemoryAdapter());
   const base = {
     clientId: 'com.example.app',
     redirectUri: 'https://example.com/cb',
@@ -59,7 +60,7 @@ test('readCallbackInput 优先 body，并解析一次性 user', async () => {
     keyId: 'kid',
     privateKey: pem,
     redirectUri: 'https://example.com/cb',
-    store: new CacheMemoryAdapter(),
+    store: new Caching(new CacheMemoryAdapter()),
   });
 
   const input = client['readCallbackInput']({
@@ -99,7 +100,7 @@ test('clientSecret 签发为 JWT', async () => {
     keyId: 'KEYID',
     privateKey: pem,
     redirectUri: 'https://example.com/cb',
-    store: new CacheMemoryAdapter(),
+    store: new Caching(new CacheMemoryAdapter()),
     onProfile: async ({ oidc }) => oidc.claims.sub,
   });
 

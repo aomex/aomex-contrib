@@ -31,9 +31,9 @@
     "access": "public"
   },
   "peerDependencies": {
-    "@aomex/oauth2-client": "^4.5.0"
+    "@aomex/oauth2-client": "^4.7.0"
   },
   "devDependencies": {
-    "@aomex/oauth2-client": "^4.5.0"
+    "@aomex/oauth2-client": "^4.7.0"
   }
 }

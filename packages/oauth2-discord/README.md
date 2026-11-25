@@ -31,13 +31,14 @@ pnpm add @aomex-contrib/oauth2-discord @aomex/oauth2-client
 
 ## 3. store
 
-保存 OAuth `state`。生产用共享 Redis；本地可用 `CacheMemoryAdapter`。
+保存 OAuth `state`。生产用共享 Redis；本地可用 `Caching` + `CacheMemoryAdapter`。
 
 ---
 
 ## 4. 最小可跑通示例
 
 ```ts
+import { Caching } from '@aomex/cache';
 import { CacheMemoryAdapter } from '@aomex/cache/memory';
 import { DiscordOAuth2Client } from '@aomex-contrib/oauth2-discord';
 
@@ -45,7 +46,7 @@ const discord = new DiscordOAuth2Client({
   clientId: process.env.DISCORD_CLIENT_ID!,
   clientSecret: process.env.DISCORD_CLIENT_SECRET!,
   redirectUri: 'https://example.com/oauth/discord/callback',
-  store: new CacheMemoryAdapter(),
+  store: new Caching(new CacheMemoryAdapter()),
   // 默认 scopes: identify, email
 });
 

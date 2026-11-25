@@ -1,3 +1,4 @@
+import { Caching } from '@aomex/cache';
 import { CacheMemoryAdapter } from '@aomex/cache/memory';
 import { afterEach, expect, test, vi } from 'vitest';
 import { WecomOAuth2Client } from '../src';
@@ -37,7 +38,7 @@ function createClient(
     corpId?: string;
     corpSecret?: string;
     agentId?: string | number;
-    store?: CacheMemoryAdapter;
+    store?: Caching;
   } = {},
 ) {
   return new WecomOAuth2Client({
@@ -46,12 +47,12 @@ function createClient(
     corpSecret: opts.corpSecret ?? 'sec',
     agentId: opts.agentId ?? 1,
     redirectUri: 'https://example.com/cb',
-    store: opts.store ?? new CacheMemoryAdapter(),
+    store: opts.store ?? new Caching(new CacheMemoryAdapter()),
   });
 }
 
 test('构造：空 corpId / corpSecret / agentId 抛错', () => {
-  const store = new CacheMemoryAdapter();
+  const store = new Caching(new CacheMemoryAdapter());
   const base = {
     redirectUri: 'https://example.com/cb',
     store,
@@ -98,7 +99,7 @@ test('授权 URL：appid=corpId、默认 snsapi_base、agentid、#wechat_redirec
     corpSecret: 'sec',
     agentId: 1000002,
     redirectUri: 'https://example.com/cb',
-    store: new CacheMemoryAdapter(),
+    store: new Caching(new CacheMemoryAdapter()),
     scopes: ['snsapi_base'],
     onProfile: async ({ profile }) => profile.userid,
   });
@@ -131,7 +132,7 @@ test('authorizationParams 附加在 agentid 后；忽略覆盖必填字段', asy
     corpSecret: 'sec',
     agentId: 1,
     redirectUri: 'https://example.com/cb',
-    store: new CacheMemoryAdapter(),
+    store: new Caching(new CacheMemoryAdapter()),
     scopes: ['snsapi_privateinfo'],
     authorizationParams: {
       foo: 'bar',
@@ -159,7 +160,7 @@ test('authorizationParams 附加在 agentid 后；忽略覆盖必填字段', asy
 });
 
 test('callback：gettoken + getuserinfo；默认 onProfile 返回 WecomProfile', async () => {
-  const store = new CacheMemoryAdapter();
+  const store = new Caching(new CacheMemoryAdapter());
   const client = new WecomOAuth2Client({
     scopes: ['snsapi_base'],
     corpId: 'ww_corp',
@@ -245,7 +246,7 @@ test('gettoken / getuserinfo 失败 errcode', async () => {
     i18n.t('access_token_failed', { errcode: '40013', errmsg: 'invalid corpid' }),
   );
 
-  const store = new CacheMemoryAdapter();
+  const store = new Caching(new CacheMemoryAdapter());
   const oauth = createClient({ store });
   const raw = await oauth.getAuthorizationUrl(mockCtx());
   const state = new URL(raw.replace(/#wechat_redirect$/, '')).searchParams.get('state')!;
@@ -365,7 +366,7 @@ test('withAccessToken：assertOk 遇 42001 清缓存后重试', async () => {
 });
 
 test('getAccessToken / deleteAccessToken 按 agentId 隔离缓存键', async () => {
-  const store = new CacheMemoryAdapter();
+  const store = new Caching(new CacheMemoryAdapter());
   let tokenCalls = 0;
 
   stubJsonFetch(() => {

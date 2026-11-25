@@ -1,4 +1,4 @@
-import type { CacheAdapter } from '@aomex/cache';
+import type { Caching } from '@aomex/cache';
 import type { DurationInput } from '@aomex/common';
 import { OAuth2Client } from '@aomex/oauth2-client';
 import type { WebContext } from '@aomex/web';
@@ -15,7 +15,7 @@ export type WechatOAuthBaseOptions<Profile = WechatProfile> = {
   appId: string;
   appSecret: string;
   redirectUri: string | ((ctx: WebContext) => string);
-  store: CacheAdapter;
+  store: Caching;
   stateTtl?: DurationInput;
   scopes: readonly string[];
   authorizationParams?: Record<string, string>;
@@ -89,7 +89,7 @@ export abstract class WechatOAuth2Client<
   override async getAuthorizationUrl(ctx: WebContext): Promise<string> {
     const { authorizationEndpoint } = await this.resolveEndpoints();
     const state = this.randomToken();
-    await this.caching.set(this.stateKey(state), { verifier: '' }, this.stateTtlMs);
+    await this.cache.set(this.stateKey(state), { verifier: '' }, this.stateTtlMs);
 
     const redirectUri = this.resolveRedirectUri(ctx);
     const url = new URL(authorizationEndpoint);
