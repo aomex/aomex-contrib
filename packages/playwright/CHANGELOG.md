@@ -1,5 +1,11 @@
 # @aomex-contrib/playwright
 
+## 0.3.0
+
+### Minor Changes
+
+- [`e99f20f`](https://github.com/aomex/aomex-contrib/commit/e99f20fae0eed3544433a312993023258aebaed4) Thanks [@geekact](https://github.com/geekact)! - 包名由 `@aomex-contrib/playwright-service` 更名为 `@aomex-contrib/playwright`
+
 ## 0.2.0
 
 ### Minor Changes
