@@ -1,5 +1,5 @@
 {
-  "name": "@aomex-contrib/playwright-service",
+  "name": "@aomex-contrib/playwright",
   "version": "0.2.0",
   "description": "基于 Playwright 的浏览器服务",
   "repository": "git@github.com:aomex/aomex-contrib.git",

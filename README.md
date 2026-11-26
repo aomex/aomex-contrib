@@ -44,6 +44,6 @@ pnpm release            # 发布到 npm
 
 ## 其它集成
 
-| 包                                                                                                   | Version                                                                | 说明                  |
-| ---------------------------------------------------------------------------------------------------- | ---------------------------------------------------------------------- | --------------------- |
-| [`playwright-service`](https://github.com/aomex/aomex-contrib/tree/main/packages/playwright-service) | ![npm](https://img.shields.io/npm/v/@aomex-contrib/playwright-service) | Playwright 浏览器服务 |
+| 包                                                                                   | Version                                                        | 说明                  |
+| ------------------------------------------------------------------------------------ | -------------------------------------------------------------- | --------------------- |
+| [`playwright`](https://github.com/aomex/aomex-contrib/tree/main/packages/playwright) | ![npm](https://img.shields.io/npm/v/@aomex-contrib/playwright) | Playwright 浏览器服务 |

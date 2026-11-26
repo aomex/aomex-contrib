@@ -448,7 +448,7 @@ importers:
         specifier: ^4.7.0
         version: 4.7.0(@aomex/common@4.7.0(typescript@7.0.2))(@aomex/logger@4.7.0(@aomex/common@4.7.0(typescript@7.0.2)))
 
-  packages/playwright-service:
+  packages/playwright:
     dependencies:
       playwright-extra:
         specifier: ^4.3.6

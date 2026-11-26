@@ -1,4 +1,4 @@
-# @aomex-contrib/playwright-service
+# @aomex-contrib/playwright
 
 基于 [Playwright](https://playwright.dev) 的 aomex **Browser Service**：`onInit` 启动唯一 Chromium，每次任务用独立 `BrowserContext` 注入代理。默认经 [playwright-extra](https://github.com/berstend/puppeteer-extra/tree/master/packages/playwright-extra) + [puppeteer-extra-plugin-stealth](https://github.com/berstend/puppeteer-extra/tree/master/packages/puppeteer-extra-plugin-stealth) 做反自动化。
 
@@ -28,7 +28,7 @@
 ### 本地
 
 ```bash
-pnpm add @aomex-contrib/playwright-service playwright
+pnpm add @aomex-contrib/playwright playwright
 ```
 
 ### Docker：官方 Node 镜像
@@ -98,7 +98,7 @@ createPlaywrightService({ logger, headless: false });
 
 ```ts
 // src/services/browser.service.ts
-import { createPlaywrightService } from '@aomex-contrib/playwright-service';
+import { createPlaywrightService } from '@aomex-contrib/playwright';
 import { Logger } from '@aomex/logger';
 
 export default createPlaywrightService({
@@ -123,7 +123,7 @@ export const services = await combineServices({
 
 ```ts
 // ❌ 入口一加载就会拉起 Playwright / stealth 等依赖，进程一开始就多占内存
-import { createPlaywrightService } from '@aomex-contrib/playwright-service';
+import { createPlaywrightService } from '@aomex-contrib/playwright';
 browser: async () => createPlaywrightService({ logger, headless: true }),
 ```
 
@@ -135,10 +135,7 @@ browser: async () => createPlaywrightService({ logger, headless: true }),
 
 ```ts
 // src/services/browser.service.ts
-import {
-  createPlaywrightService,
-  type WithPageOptions,
-} from '@aomex-contrib/playwright-service';
+import { createPlaywrightService, type WithPageOptions } from '@aomex-contrib/playwright';
 import { Logger } from '@aomex/logger';
 import type { BrowserContext, Page } from 'playwright';
 

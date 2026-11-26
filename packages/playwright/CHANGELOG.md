@@ -1,4 +1,4 @@
-# @aomex-contrib/playwright-service
+# @aomex-contrib/playwright
 
 ## 0.2.0
 
